@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-export type WorkingConditionCategory = "On-Site" | "Online" | "Hybrid" | "Unspecified";
+export type WorkingConditionCategory =
+  | "On-Site"
+  | "Online"
+  | "Hybrid"
+  | "Unspecified";
 
 export type JobListing = {
   id: number;
@@ -17,6 +21,7 @@ export type JobListing = {
   monthlyCompensation: number | null;
   compensationAmount: number | null;
   compensationTypeLabel: string | null;
+  quota: number | null;
 };
 
 export type JobDetail = JobListing & {
@@ -91,7 +96,7 @@ const tagData = readJsonFile<RawTagDataset>("data/tag.json");
 
 function computeMonthlyCompensation(
   amount: number | null | undefined,
-  label: string | null | undefined
+  label: string | null | undefined,
 ): number | null {
   if (amount == null) {
     return null;
@@ -111,7 +116,7 @@ function computeMonthlyCompensation(
 }
 
 function normalizeWorkingCondition(
-  rawCondition: string | null | undefined
+  rawCondition: string | null | undefined,
 ): WorkingConditionCategory {
   if (!rawCondition) {
     return "Unspecified";
@@ -132,7 +137,11 @@ function normalizeWorkingCondition(
     return "Online";
   }
 
-  if (lower.includes("on-site") || lower.includes("onsite") || lower.includes("on site")) {
+  if (
+    lower.includes("on-site") ||
+    lower.includes("onsite") ||
+    lower.includes("on site")
+  ) {
     return "On-Site";
   }
 
@@ -140,7 +149,10 @@ function normalizeWorkingCondition(
 }
 
 function buildDescriptionSnippet(base: string): string {
-  const plain = base.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const plain = base
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (plain.length <= 280) {
     return plain;
   }
@@ -156,7 +168,11 @@ function cleanupMultiline(value: string | null | undefined): string | null {
   if (!value) {
     return null;
   }
-  const collapsed = value.replace(/\r\n|\r/g, "\n").split("\n").map((line) => line.trim()).filter(Boolean);
+  const collapsed = value
+    .replace(/\r\n|\r/g, "\n")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
   if (collapsed.length === 0) {
     return null;
   }
@@ -165,55 +181,65 @@ function cleanupMultiline(value: string | null | undefined): string | null {
 
 type TransformedJob = JobDetail;
 
-const transformedJobs: TransformedJob[] = (internData.items ?? []).map((item) => {
-  const rawDescription = item.description?.trim() ?? "";
-  const monthlyCompensation = computeMonthlyCompensation(
-    item.compensationAmount ?? null,
-    item.compensationType?.compensationType ?? null
-  );
-  const tags = Array.from(
-    new Set(
-      (item.tags ?? [])
-        .map((tag) => tag.tagName?.trim())
-        .filter((tagName): tagName is string => Boolean(tagName))
-    )
-  ).sort((a, b) => a.localeCompare(b, "th-TH"));
+const transformedJobs: TransformedJob[] = (internData.items ?? []).map(
+  (item) => {
+    const rawDescription = item.description?.trim() ?? "";
+    const monthlyCompensation = computeMonthlyCompensation(
+      item.compensationAmount ?? null,
+      item.compensationType?.compensationType ?? null,
+    );
+    const tags = Array.from(
+      new Set(
+        (item.tags ?? [])
+          .map((tag) => tag.tagName?.trim())
+          .filter((tagName): tagName is string => Boolean(tagName)),
+      ),
+    ).sort((a, b) => a.localeCompare(b, "th-TH"));
 
-  const transformed: TransformedJob = {
-    id: item.openingId,
-    title: item.title,
-    companyNamePrimary: cleanupString(item.company.companyNameTh) ?? "ไม่ระบุชื่อบริษัท",
-    companyNameSecondary: cleanupString(item.company.companyNameEn),
-    logoUrl: cleanupString(item.company.logoUrl),
-    tags,
-    workingConditionDisplay: cleanupString(item.workingCondition) ?? "ไม่ระบุ",
-    workingConditionCategory: normalizeWorkingCondition(item.workingCondition),
-    location:
-      cleanupString(item.officeName) ??
-      cleanupMultiline(item.officeAddressLine1)?.replace(/\n/g, ", ") ??
-      null,
-    descriptionSnippet: rawDescription ? buildDescriptionSnippet(rawDescription) : "",
-    monthlyCompensation,
-    compensationAmount: item.compensationAmount ?? null,
-    compensationTypeLabel: cleanupString(item.compensationType?.compensationType),
-    descriptionHtml: rawDescription,
-    officeName: cleanupString(item.officeName),
-    officeAddressLine1: cleanupMultiline(item.officeAddressLine1),
-    officeAddressLine2: cleanupMultiline(item.officeAddressLine2),
-    recruitmentContact: cleanupMultiline(item.recruitmentContactChannel),
-    detailContact: cleanupMultiline(item.openingDetailContactChannel),
-    companyWebsite: cleanupString(item.company.website),
-    companyFacebook: cleanupString(item.company.facebook),
-    companyLine: cleanupString(item.company.line),
-    quota: item.quota ?? null,
-    startDateIso: cleanupString(item.startDate) ?? null,
-    endDateIso: cleanupString(item.endDate) ?? null,
-    openForCooperativeInternship: Boolean(item.openForCooperativeInternship),
-    workingConditionRaw: cleanupString(item.workingCondition),
-  } satisfies TransformedJob;
+    const transformed: TransformedJob = {
+      id: item.openingId,
+      title: item.title,
+      companyNamePrimary:
+        cleanupString(item.company.companyNameTh) ?? "ไม่ระบุชื่อบริษัท",
+      companyNameSecondary: cleanupString(item.company.companyNameEn),
+      logoUrl: cleanupString(item.company.logoUrl),
+      tags,
+      workingConditionDisplay:
+        cleanupString(item.workingCondition) ?? "ไม่ระบุ",
+      workingConditionCategory: normalizeWorkingCondition(
+        item.workingCondition,
+      ),
+      location:
+        cleanupString(item.officeName) ??
+        cleanupMultiline(item.officeAddressLine1)?.replace(/\n/g, ", ") ??
+        null,
+      descriptionSnippet: rawDescription
+        ? buildDescriptionSnippet(rawDescription)
+        : "",
+      monthlyCompensation,
+      compensationAmount: item.compensationAmount ?? null,
+      compensationTypeLabel: cleanupString(
+        item.compensationType?.compensationType,
+      ),
+      descriptionHtml: rawDescription,
+      officeName: cleanupString(item.officeName),
+      officeAddressLine1: cleanupMultiline(item.officeAddressLine1),
+      officeAddressLine2: cleanupMultiline(item.officeAddressLine2),
+      recruitmentContact: cleanupMultiline(item.recruitmentContactChannel),
+      detailContact: cleanupMultiline(item.openingDetailContactChannel),
+      companyWebsite: cleanupString(item.company.website),
+      companyFacebook: cleanupString(item.company.facebook),
+      companyLine: cleanupString(item.company.line),
+      quota: item.quota ?? null,
+      startDateIso: cleanupString(item.startDate) ?? null,
+      endDateIso: cleanupString(item.endDate) ?? null,
+      openForCooperativeInternship: Boolean(item.openForCooperativeInternship),
+      workingConditionRaw: cleanupString(item.workingCondition),
+    } satisfies TransformedJob;
 
-  return transformed;
-});
+    return transformed;
+  },
+);
 
 export function getJobListings(): JobListing[] {
   return transformedJobs.map((job) => ({
@@ -230,6 +256,7 @@ export function getJobListings(): JobListing[] {
     monthlyCompensation: job.monthlyCompensation,
     compensationAmount: job.compensationAmount,
     compensationTypeLabel: job.compensationTypeLabel,
+    quota: job.quota,
   }));
 }
 
@@ -243,8 +270,8 @@ export function getAllTags(): string[] {
     new Set(
       tagData
         .map((tag) => tag.tagName?.trim())
-        .filter((tagName): tagName is string => Boolean(tagName))
-    )
+        .filter((tagName): tagName is string => Boolean(tagName)),
+    ),
   ).sort((a, b) => a.localeCompare(b, "th-TH"));
 }
 

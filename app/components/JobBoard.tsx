@@ -41,7 +41,7 @@ function buildFilterableJobs(
   selectedTag: string,
   selectedWorkingConditions: WorkingConditionCategory[],
   searchQuery: string,
-  sortOrder: "asc" | "desc"
+  sortOrder: "asc" | "desc",
 ): Job[] {
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const hasQuery = trimmedQuery.length > 0;
@@ -112,9 +112,9 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
         selectedTag,
         selectedWorkingConditions,
         searchQuery,
-        sortOrder
+        sortOrder,
       ),
-    [jobs, selectedTag, selectedWorkingConditions, searchQuery, sortOrder]
+    [jobs, selectedTag, selectedWorkingConditions, searchQuery, sortOrder],
   );
 
   const toggleWorkingCondition = (value: WorkingConditionCategory) => {
@@ -131,7 +131,9 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-2 md:items-end">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-zinc-600">ค้นหาตำแหน่งหรือบริษัท</span>
+            <span className="text-sm font-medium text-zinc-600">
+              ค้นหาตำแหน่งหรือบริษัท
+            </span>
             <input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
@@ -157,10 +159,14 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
           </label>
 
           <div className="flex flex-col gap-3 md:col-span-2">
-            <span className="text-sm font-medium text-zinc-600">รูปแบบการทำงาน</span>
+            <span className="text-sm font-medium text-zinc-600">
+              รูปแบบการทำงาน
+            </span>
             <div className="flex flex-wrap gap-2">
               {WORKING_CONDITION_OPTIONS.map((option) => {
-                const isActive = selectedWorkingConditions.includes(option.value);
+                const isActive = selectedWorkingConditions.includes(
+                  option.value,
+                );
                 return (
                   <button
                     key={option.value}
@@ -180,7 +186,9 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
           </div>
 
           <div className="flex flex-col gap-2 md:col-span-2">
-            <span className="text-sm font-medium text-zinc-600">การจัดเรียงค่าตอบแทน</span>
+            <span className="text-sm font-medium text-zinc-600">
+              การจัดเรียงค่าตอบแทน
+            </span>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -211,13 +219,18 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
 
       <div className="flex flex-col gap-4">
         <p className="text-sm text-zinc-600">
-          พบ {displayJobs.length.toLocaleString("th-TH")} ตำแหน่งจากทั้งหมด {jobs.length.toLocaleString("th-TH")} ตำแหน่ง
+          พบ {displayJobs.length.toLocaleString("th-TH")} ตำแหน่งจากทั้งหมด{" "}
+          {jobs.length.toLocaleString("th-TH")} ตำแหน่ง
         </p>
 
         {displayJobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-16 text-center">
-            <p className="text-sm font-medium text-zinc-600">ไม่พบตำแหน่งที่ตรงกับเงื่อนไขที่เลือก</p>
-            <p className="mt-2 text-xs text-zinc-500">ลองปรับตัวกรองหรือค้นหาด้วยคำอื่น</p>
+            <p className="text-sm font-medium text-zinc-600">
+              ไม่พบตำแหน่งที่ตรงกับเงื่อนไขที่เลือก
+            </p>
+            <p className="mt-2 text-xs text-zinc-500">
+              ลองปรับตัวกรองหรือค้นหาด้วยคำอื่น
+            </p>
           </div>
         ) : (
           <ul className="flex flex-col gap-6">
@@ -239,7 +252,7 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
                       )}
                     </div>
                     <Link
-                      href={`/jobs/${job.id}`}
+                      href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/5`}
                       className="text-xl font-semibold text-zinc-900 transition-colors hover:text-zinc-700"
                     >
                       {job.title}
@@ -248,19 +261,31 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
                       {job.location && <span>{job.location}</span>}
                       <span>•</span>
                       <span>{job.workingConditionDisplay}</span>
+                      {job.quota != null && (
+                        <>
+                          <span>•</span>
+                          <span>
+                            รับ {job.quota.toLocaleString("th-TH")} คน
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
 
                   <div className="flex flex-col items-start md:items-end">
-                    <span className="text-sm font-medium text-zinc-500">ค่าตอบแทนโดยประมาณ</span>
+                    <span className="text-sm font-medium text-zinc-500">
+                      ค่าตอบแทนโดยประมาณ
+                    </span>
                     <span className="text-lg font-semibold text-zinc-900">
                       {formatMonthlyCompensation(job.monthlyCompensation)}
                     </span>
-                    {job.compensationAmount != null && job.compensationTypeLabel && (
-                      <span className="text-xs text-zinc-500">
-                        อัตราตั้งต้น: {formatCurrency(job.compensationAmount)} {job.compensationTypeLabel}
-                      </span>
-                    )}
+                    {job.compensationAmount != null &&
+                      job.compensationTypeLabel && (
+                        <span className="text-xs text-zinc-500">
+                          อัตราตั้งต้น: {formatCurrency(job.compensationAmount)}{" "}
+                          {job.compensationTypeLabel}
+                        </span>
+                      )}
                   </div>
                 </div>
 
@@ -285,7 +310,7 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
 
                 <div className="mt-4">
                   <Link
-                    href={`/jobs/${job.id}`}
+                    href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/5`}
                     className="text-sm font-medium text-zinc-900 transition-colors hover:text-zinc-700"
                   >
                     ดูรายละเอียดตำแหน่ง →

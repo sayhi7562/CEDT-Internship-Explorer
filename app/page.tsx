@@ -13,10 +13,10 @@ export default function Home() {
             CEDT Internship Explorer
           </p>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">
-            สำรวจตำแหน่งฝึกงานและค่าตอบแทน
+            เว็บไซต์ดูข้อมูลการฝึกงาน
           </h1>
           <p className="max-w-2xl text-sm text-zinc-600 sm:text-base">
-            ข้อมูลในระบบจะถูกแปลงค่าตอบแทนรายวันให้เป็นต่อเดือน (×20 วัน) เพื่อให้เปรียบเทียบได้ง่ายในทุกตำแหน่ง
+            ระบบเรียงค่าตอบแทนจากมากไปน้อย หากเป็นต่อวัน จะถูกแปลกเป็นต่อเดือน (×20 วัน) เพื่อให้เปรียบเทียบได้ง่าย
           </p>
         </header>
         <JobBoard jobs={jobs} allTags={allTags} />
