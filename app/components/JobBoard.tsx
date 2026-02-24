@@ -49,6 +49,9 @@ function buildFilterableJobs(
   const hasCondition = selectedWorkingConditions.length > 0;
 
   const filtered = jobs.filter((job) => {
+    if (job.quota === 0) {
+      return false;
+    }
     const matchesTag = hasTag
       ? job.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
       : true;
