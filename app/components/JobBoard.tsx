@@ -42,6 +42,7 @@ function buildFilterableJobs(
   selectedWorkingConditions: WorkingConditionCategory[],
   searchQuery: string,
   sortOrder: "asc" | "desc",
+  sortMode: "compensation" | "title",
 ): Job[] {
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const hasQuery = trimmedQuery.length > 0;
@@ -68,6 +69,10 @@ function buildFilterableJobs(
 
     return matchesTag && matchesCondition && matchesQuery;
   });
+
+  if (sortMode === "title") {
+    return filtered.sort((a, b) => a.title.localeCompare(b.title, "th-TH"));
+  }
 
   const sorted = filtered.sort((a, b) => {
     const aComp = a.monthlyCompensation;
@@ -107,6 +112,9 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
   >([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortMode, setSortMode] = useState<"compensation" | "title">(
+    "compensation",
+  );
 
   const displayJobs = useMemo(
     () =>
@@ -116,8 +124,16 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
         selectedWorkingConditions,
         searchQuery,
         sortOrder,
+        sortMode,
       ),
-    [jobs, selectedTag, selectedWorkingConditions, searchQuery, sortOrder],
+    [
+      jobs,
+      selectedTag,
+      selectedWorkingConditions,
+      searchQuery,
+      sortOrder,
+      sortMode,
+    ],
   );
 
   const toggleWorkingCondition = (value: WorkingConditionCategory) => {
@@ -190,6 +206,36 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
 
           <div className="flex flex-col gap-2 md:col-span-2">
             <span className="text-sm font-medium text-zinc-600">
+              รูปแบบการจัดเรียง
+            </span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setSortMode("compensation")}
+                className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                  sortMode === "compensation"
+                    ? "border-zinc-900 bg-zinc-900 text-white"
+                    : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                }`}
+              >
+                ตามค่าตอบแทน
+              </button>
+              <button
+                type="button"
+                onClick={() => setSortMode("title")}
+                className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                  sortMode === "title"
+                    ? "border-zinc-900 bg-zinc-900 text-white"
+                    : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                }`}
+              >
+                ตามชื่อตำแหน่ง (A→Z)
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 md:col-span-2">
+            <span className="text-sm font-medium text-zinc-600">
               การจัดเรียงค่าตอบแทน
             </span>
             <div className="flex gap-2">
@@ -197,7 +243,7 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
                 type="button"
                 onClick={() => setSortOrder("desc")}
                 className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                  sortOrder === "desc"
+                  sortOrder === "desc" && sortMode === "compensation"
                     ? "border-zinc-900 bg-zinc-900 text-white"
                     : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
                 }`}
@@ -208,7 +254,7 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
                 type="button"
                 onClick={() => setSortOrder("asc")}
                 className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                  sortOrder === "asc"
+                  sortOrder === "asc" && sortMode === "compensation"
                     ? "border-zinc-900 bg-zinc-900 text-white"
                     : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
                 }`}
