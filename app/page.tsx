@@ -20,6 +20,9 @@ export default function Home() {
             (×20 วัน) เพื่อให้เปรียบเทียบได้ง่าย และตัดตำแหน่งที่ที่นั่งเป็น 0
             ออกไปแล้ว
           </p>
+          <p className="max-w-xl text-sm text-zinc-600 sm:text-base">
+            อัปเดตข้อมูลล่าสุด 26/02/2026 10.35
+          </p>
         </header>
         <JobBoard jobs={jobs} allTags={allTags} />
       </main>

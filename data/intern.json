@@ -176,7 +176,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -299,7 +299,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 6,
             "isBookmarked": false
         },
         {
@@ -763,7 +763,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 9,
             "isBookmarked": false
         },
         {
@@ -812,7 +812,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -861,7 +861,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -906,7 +906,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -951,7 +951,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -992,7 +992,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -1037,7 +1037,7 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -1102,7 +1102,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -1155,7 +1155,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -1204,7 +1204,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -1249,7 +1249,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -1465,7 +1465,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 0,
             "isBookmarked": false
         },
         {
@@ -1523,7 +1523,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -1569,7 +1569,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -1816,7 +1816,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -1897,7 +1897,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -2120,8 +2120,8 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
-            "isBookmarked": false
+            "inStudentDraftCount": 4,
+            "isBookmarked": true
         },
         {
             "openingId": 1156,
@@ -2836,7 +2836,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -3030,7 +3030,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -3071,7 +3071,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 9,
             "isBookmarked": false
         },
         {
@@ -3193,7 +3193,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 5,
             "isBookmarked": false
         },
         {
@@ -3229,7 +3229,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -3372,7 +3372,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -3557,7 +3557,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -3708,7 +3708,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -3769,7 +3769,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -4017,7 +4017,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -4144,7 +4144,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 5,
             "isBookmarked": false
         },
         {
@@ -4292,7 +4292,7 @@
             "startDate": "2026-05-24T17:00:00.000Z",
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -4678,7 +4678,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -4873,7 +4873,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 5,
             "isBookmarked": false
         },
         {
@@ -4934,7 +4934,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -4983,7 +4983,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -5194,8 +5194,8 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
-            "isBookmarked": false
+            "inStudentDraftCount": 5,
+            "isBookmarked": true
         },
         {
             "openingId": 1263,
@@ -5477,7 +5477,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 9,
             "isBookmarked": false
         },
         {
@@ -5557,7 +5557,7 @@
             "startDate": "2026-04-19T17:00:00.000Z",
             "endDate": "2026-06-29T17:00:00.000Z",
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -5650,7 +5650,7 @@
             "startDate": "2026-04-19T17:00:00.000Z",
             "endDate": "2026-06-29T17:00:00.000Z",
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -5687,8 +5687,8 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
-            "isBookmarked": false
+            "inStudentDraftCount": 5,
+            "isBookmarked": true
         },
         {
             "openingId": 1276,
@@ -5855,7 +5855,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 8,
             "isBookmarked": false
         },
         {
@@ -5908,7 +5908,7 @@
             "endDate": "2026-12-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -5998,7 +5998,7 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -6085,7 +6085,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -6118,7 +6118,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -6151,7 +6151,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -6239,7 +6239,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -6420,7 +6420,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -6490,7 +6490,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -6540,7 +6540,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -6689,7 +6689,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -6779,7 +6779,7 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -7125,7 +7125,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -7201,7 +7201,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -7239,7 +7239,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -7277,8 +7277,8 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
-            "isBookmarked": false
+            "inStudentDraftCount": 6,
+            "isBookmarked": true
         },
         {
             "openingId": 1331,
@@ -7349,7 +7349,7 @@
             "endDate": "2026-07-09T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -7496,7 +7496,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -7666,7 +7666,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -7724,7 +7724,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -7773,7 +7773,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -7926,7 +7926,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -8101,7 +8101,7 @@
             "endDate": "2026-10-29T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -8247,7 +8247,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -8300,7 +8300,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -8427,7 +8427,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -8469,7 +8469,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -8634,7 +8634,7 @@
                 "companyId": 137,
                 "companyNameTh": "บริษัท เวแอม จำกัด ",
                 "companyNameEn": "vaam co.,ltd.",
-                "logoUrl": null,
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/017eeb43-f0ca-4aba-9968-a87742780e81?v=1772037003330",
                 "website": null,
                 "facebook": null,
                 "line": null
@@ -8749,7 +8749,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -8810,7 +8810,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -9013,7 +9013,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -9078,7 +9078,7 @@
             "endDate": "2026-06-29T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -9718,7 +9718,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 7,
             "isBookmarked": false
         },
         {
@@ -9764,7 +9764,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -9797,7 +9797,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -9835,7 +9835,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -9940,7 +9940,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -10078,7 +10078,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 5,
             "isBookmarked": false
         },
         {
@@ -10291,7 +10291,7 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 6,
             "isBookmarked": false
         },
         {
@@ -10409,7 +10409,7 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -10466,7 +10466,7 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -10626,7 +10626,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -10691,7 +10691,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -10736,8 +10736,8 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
-            "isBookmarked": false
+            "inStudentDraftCount": 7,
+            "isBookmarked": true
         },
         {
             "openingId": 1451,
@@ -10911,7 +10911,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -11089,7 +11089,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -11146,7 +11146,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 5,
             "isBookmarked": false
         },
         {
@@ -11253,7 +11253,7 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -11299,7 +11299,7 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -11385,8 +11385,8 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "isAcceptingApplication": false,
+            "inStudentDraftCount": 0,
             "isBookmarked": false
         },
         {
@@ -11459,7 +11459,7 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -11505,7 +11505,7 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -11563,7 +11563,7 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -11633,8 +11633,8 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "isAcceptingApplication": false,
+            "inStudentDraftCount": 0,
             "isBookmarked": false
         },
         {
@@ -11687,7 +11687,7 @@
             "startDate": null,
             "endDate": null,
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -11769,7 +11769,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 5,
             "isBookmarked": false
         },
         {
@@ -11822,7 +11822,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 8,
             "isBookmarked": false
         },
         {
@@ -11895,7 +11895,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -11964,7 +11964,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -12065,7 +12065,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -12142,8 +12142,8 @@
                 "line": ""
             },
             "title": "Internship Program 2026 (นักศึกษาฝึกงาน)",
-            "description": "<p>โครงการฝึกงานอลิอันซ์ อยุธยา ประจำปี 2026 มุ่งเน้นการพัฒนาศักยภาพของนักศึกษาผ่านการปฏิบัติงานจริง (Project-based) ร่วมกับทีมงานมืออาชีพ รองรับทั้งรูปแบบการฝึกงานภาคปกติ และ สหกิจศึกษา (Co-Op)</p><p><br></p><p>The Allianz Ayudhya Internship Program 2026 is designed to nurture the next generation of talent. Interns will gain hands-on experience, mentorship, and exposure to global standards in the insurance and financial sector. We welcome both Regular Interns and Co-Op students.</p><p><br></p><p><u>คุณสมบัติผู้สมัคร:</u></p><p><br></p><ul><li>กำลังศึกษาอยู่ชั้นปีที่ 3 หรือ 4 ในระดับปริญญาตรี (ทั้งภาคปกติและสหกิจศึกษา) - Current 3rd or 4th-year university students (both Regular Interns and Co-Op students)</li><li>มีความกระตือรือร้น พร้อมเรียนรู้สิ่งใหม่ๆ และกล้าแสดงความคิดเห็น - Eager to learn, proactive, and adaptable (\"Dare to\" attitude)</li><li>สามารถใช้งานคอมพิวเตอร์ โปรแกรมพื้นฐาน และเครื่องมือ AI ใหม่ๆได้เป็นอย่างดี - Able to use computers, basic programs, and new AI tools well.</li><li>ค่าตอบแทนระหว่างฝึกงาน 400 บาทต่อวัน - Internship allowance: 400 baht per day</li></ul><p><br></p><p><u>สาขาวิชาที่เปิดรับ (Majors):</u></p><p><br></p><ul><li>สาย Tech &amp; Data: Computer Science, IT, ICT, MIS, Data/Business Analytics, Programming</li><li>สาย Actuarial &amp; Statistics: Actuarial Science, Statistics, Mathematics, Insurance, Economics, Finance</li><li>สาย Business &amp; Management: Industrial Engineering, Safety Engineering,</li><li>Civil Engineering, Electrical Engineering, Public Health - Occupational Health &amp; Safety</li><li>สาย Creative &amp; Design: Marketing, Digital Marketing, Arts, Communication Arts, Education </li></ul><p><br></p><p><u>วิธีการสมัคร:</u></p><p><br></p><p>สนใจร่วมฝึกงานกับเรา ส่ง Resume และ Transcript พร้อมระบุช่วงเวลาที่ต้องการฝึกงาน มาที่ลิงก์ - If you are interested in joining us for an internship, please send your resume and transcript, specifying the desired internship period, to the link: <a rel=\"noopener noreferrer\" href=\"https://allianz-thailand.esaas.inmoment.eu/cgi-bin/qwebcorporate?idx=YBQHSV\">https://allianz-thailand.esaas.inmoment.eu/cgi-bin/qwebcorporate?idx=YBQHSV</a> </p>",
-            "quota": 29,
+            "description": "<p>โครงการฝึกงานอลิอันซ์ อยุธยา ประจำปี 2026 มุ่งเน้นการพัฒนาศักยภาพของนักศึกษาผ่านการปฏิบัติงานจริง (Project-based) ร่วมกับทีมงานมืออาชีพ รองรับทั้งรูปแบบการฝึกงานภาคปกติ และ สหกิจศึกษา (Co-Op)</p><p><br></p><p>The Allianz Ayudhya Internship Program 2026 is designed to nurture the next generation of talent. Interns will gain hands-on experience, mentorship, and exposure to global standards in the insurance and financial sector. We welcome both Regular Interns and Co-Op students.</p><p><br></p><p><u>คุณสมบัติผู้สมัคร:</u></p><p><br></p><ul><li>กำลังศึกษาอยู่ชั้นปีที่ 3 หรือ 4 ในระดับปริญญาตรี (ทั้งภาคปกติและสหกิจศึกษา) - Current 3rd or 4th-year university students (both Regular Interns and Co-Op students)</li><li>มีความกระตือรือร้น พร้อมเรียนรู้สิ่งใหม่ๆ และกล้าแสดงความคิดเห็น - Eager to learn, proactive, and adaptable (\"Dare to\" attitude)</li><li>สามารถใช้งานคอมพิวเตอร์ โปรแกรมพื้นฐาน และเครื่องมือ AI ใหม่ๆได้เป็นอย่างดี - Able to use computers, basic programs, and new AI tools well.</li><li>ค่าตอบแทนระหว่างฝึกงาน 400 บาทต่อวัน - Internship allowance: 400 baht per day</li></ul><p><br></p><p><u>สาขาวิชาที่เปิดรับ (Majors):</u></p><p><br></p><ul><li>สาย Tech &amp; Data: Computer Science, IT, ICT, MIS, Data/Business Analytics, Programming</li><li>สาย Actuarial &amp; Statistics: Actuarial Science, Statistics, Mathematics, Insurance, Economics, Finance</li><li>สาย Business &amp; Management: Industrial Engineering, Safety Engineering,</li><li>Civil Engineering, Electrical Engineering, Public Health - Occupational Health &amp; Safety</li><li>สาย Creative &amp; Design: Marketing, Digital Marketing, Arts, Communication Arts, Education</li></ul><p><br></p><p><u>วิธีการสมัคร:</u></p><p><br></p><p>สนใจร่วมฝึกงานกับเรา ส่ง Resume และ Transcript พร้อมระบุช่วงเวลาที่ต้องการฝึกงาน มาที่ลิงก์ - If you are interested in joining us for an internship, please send your resume and transcript, specifying the desired internship period, to the link: <a rel=\"noopener noreferrer\" href=\"https://allianz-thailand.esaas.inmoment.eu/cgi-bin/qwebcorporate?idx=YBQHSV\">https://allianz-thailand.esaas.inmoment.eu/cgi-bin/qwebcorporate?idx=YBQHSV</a></p>",
+            "quota": 1,
             "openForCooperativeInternship": true,
             "compensationAmount": 400,
             "compensationType": {
@@ -12315,7 +12315,7 @@
             "endDate": "2026-09-29T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -12648,7 +12648,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -12993,7 +12993,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -13298,7 +13298,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -13355,7 +13355,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -13457,7 +13457,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -13550,7 +13550,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -13682,7 +13682,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -13776,7 +13776,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -13841,7 +13841,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -14001,7 +14001,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -14290,8 +14290,8 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
-            "isBookmarked": false
+            "inStudentDraftCount": 1,
+            "isBookmarked": true
         },
         {
             "openingId": 1561,
@@ -14347,8 +14347,8 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
-            "isBookmarked": false
+            "inStudentDraftCount": 2,
+            "isBookmarked": true
         },
         {
             "openingId": 1562,
@@ -14461,7 +14461,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -14567,7 +14567,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -14918,7 +14918,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -15133,7 +15133,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -15346,7 +15346,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -15508,7 +15508,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -15557,7 +15557,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 1,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -15602,7 +15602,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -15725,7 +15725,7 @@
             "endDate": "2026-06-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 2,
+            "inStudentDraftCount": 4,
             "isBookmarked": false
         },
         {
@@ -15761,7 +15761,7 @@
             "endDate": "2026-08-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -15797,7 +15797,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -16025,7 +16025,7 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 8,
             "isBookmarked": false
         },
         {
@@ -16082,7 +16082,7 @@
             "startDate": "2026-05-17T17:00:00.000Z",
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
-            "isAcceptingApplication": true,
+            "isAcceptingApplication": false,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         },
@@ -16144,7 +16144,79 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1649,
+            "sessionId": 5,
+            "company": {
+                "companyId": 179,
+                "companyNameTh": "บริษัท คอนเทรล แมเนจเม้นท์ จำกัด ",
+                "companyNameEn": "Contrail Management Co.,Ltd.",
+                "logoUrl": null,
+                "website": null,
+                "facebook": null,
+                "line": null
+            },
+            "title": "[Internship] Developer",
+            "description": "<p><strong style=\"background-color: transparent;\">Responsibilities:</strong></p><ul><li><span style=\"background-color: transparent;\">Collaborate with analysts in the development and initiation of new trading tools/systems</span></li><li><span style=\"background-color: transparent;\">Research, document, and implement system requirements and specifications</span></li><li><span style=\"background-color: transparent;\">Develop and maintain backend services for trading infrastructure, including order management, market data, and risk/account systems.</span></li><li><span style=\"background-color: transparent;\">Build and optimize core exchange components: order books, matching engines, liquidation engines, funding rate logic, and PnL/position calculations.</span></li><li><span style=\"background-color: transparent;\">Debug, profile, and optimize on-chain and off-chain components.</span></li><li><span style=\"background-color: transparent;\">Develop and maintain backend services for Spot &amp; Futures trading, including order handling, matching workflows, and risk/account systems.</span></li></ul><p><strong style=\"background-color: transparent;\">คุณสมบัติ (Requirements):</strong></p><ul><li><span style=\"background-color: transparent;\">กำลังศึกษาอยู่ระดับปริญญาตรี หรือปริญญาโท สาขาวิทยาการคอมพิวเตอร์ วิศวกรรมซอฟต์แวร์ หรือมีประสบการณ์ในอุตสาหกรรมที่เทียบเท่า</span></li><li><span style=\"background-color: transparent;\">มีทักษะการเขียนโปรแกรมอย่างน้อยหนึ่งภาษาในกลุ่มภาษาสำหรับการใช้งานทั่วไป เช่น Go, Python, TypeScript/JavaScript, C#, Java หรือภาษาอื่นที่เกี่ยวข้อง</span></li><li><span style=\"background-color: transparent;\">มีความรู้หรือความสนใจด้านการซื้อขายและคริปโทเคอร์เรนซี</span></li><li><span style=\"background-color: transparent;\">มีความเข้าใจที่ดีเกี่ยวกับอัลกอริทึม โครงสร้างข้อมูล การประมวลผลแบบพร้อมกัน (Concurrency) และการออกแบบระบบ</span></li><li><span style=\"background-color: transparent;\">สามารถเรียนรู้ ทำความเข้าใจ และประยุกต์ใช้เทคโนโลยีใหม่ได้อย่างมีประสิทธิภาพ</span></li></ul>",
+            "quota": 1,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 10000,
+            "compensationType": {
+                "compensationTypeId": 3,
+                "compensationType": "บาท/เดือน"
+            },
+            "workingCondition": "On-Site",
+            "requirements": "<p><strong style=\"background-color: transparent;\">﻿Requirements:</strong></p><ul><li><span style=\"background-color: transparent;\">Bachelor's (undergraduate) candidate or a Master's (graduate) degree student in Computer Science or Software Engineering or equivalent industry experience.</span></li><li><span style=\"background-color: transparent;\">Programming skills in one or more general-purpose languages such as Go, Python, TypeScript/JavaScript, C#, Java, or a related language.</span></li><li><span style=\"background-color: transparent;\">Have knowledge or interest in Trading and cryptocurrency.</span></li><li><span style=\"background-color: transparent;\">Good understanding of algorithms, data structures, concurrency, and system design.</span></li><li><span style=\"background-color: transparent;\">Must be able to learn, understand, and apply new technologies</span></li><li>Must be able to communicate in English</li></ul><p><br></p><p><strong style=\"background-color: transparent;\">หน้าที่และความรับผิดชอบ (Responsibilities):</strong></p><ul><li><span style=\"background-color: transparent;\">ทำงานร่วมกับนักวิเคราะห์ในการพัฒนาและเริ่มต้นใช้งานเครื่องมือหรือระบบการซื้อขายใหม่</span></li><li><span style=\"background-color: transparent;\">ศึกษา จัดทำเอกสาร และนำข้อกำหนดความต้องการของระบบ (System Requirements) และคุณลักษณะทางเทคนิค (Specifications) ไปพัฒนาและใช้งาน</span></li><li><span style=\"background-color: transparent;\">พัฒนาและดูแลรักษาบริการฝั่งแบ็กเอนด์สำหรับโครงสร้างพื้นฐานของระบบการซื้อขาย รวมถึงระบบจัดการคำสั่งซื้อขาย ข้อมูลตลาด และระบบบริหารความเสี่ยง/บัญชี</span></li><li><span style=\"background-color: transparent;\">พัฒนาและปรับปรุงประสิทธิภาพขององค์ประกอบหลักของตลาดแลกเปลี่ยน เช่น สมุดคำสั่งซื้อขาย (Order Book), ระบบจับคู่คำสั่ง (Matching Engine), ระบบบังคับปิดสถานะ (Liquidation Engine), กลไกอัตรา Funding Rate และการคำนวณกำไรขาดทุน (PnL) และสถานะการถือครอง</span></li><li><span style=\"background-color: transparent;\">วิเคราะห์ แก้ไขข้อบกพร่อง และปรับปรุงประสิทธิภาพของส่วนประกอบทั้งแบบ On-chain และ Off-chain</span></li><li><span style=\"background-color: transparent;\">พัฒนาและดูแลรักษาบริการฝั่งแบ็กเอนด์สำหรับการซื้อขายแบบ Spot และ Futures รวมถึงการจัดการคำสั่งซื้อขาย กระบวนการจับคู่คำสั่ง และระบบบริหารความเสี่ยง/บัญชี</span></li><li>สามารถใช้ภาษาอังกฤษในการทำงานได้เนื่องจากต้องทำงานกับชาวต่างชาติ</li></ul>",
+            "tags": [],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "126/9 ซอย สุขุมวิท 63 (เอกมัย) แขวงคลองตันเหนือ เขตวัฒนา กรุงเทพมหานคร 10110\nhttps://maps.app.goo.gl/grQa57Hinreq7HuF7",
+            "officeAddressLine2": "ออฟฟิศอยู่ในโครงการ Park Avenue สามารถเดินทางด้วยรถไฟฟ้า BTS ลงสถานีเอกมัยและต่อรถมอเตอร์ไซค์ มาที่อาคารปาร์คอเวนิวหรือขึ้นรถเมล์สาย 23 นำรถยนต์หรือรถมอเตอร์ไซค์มาเองได้",
+            "recruitmentContactChannel": "hr@contrail.management",
+            "openingDetailContactChannel": "hr@contrail.management",
+            "startDate": null,
+            "endDate": null,
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1655,
+            "sessionId": 5,
+            "company": {
+                "companyId": 179,
+                "companyNameTh": "บริษัท คอนเทรล แมเนจเม้นท์ จำกัด ",
+                "companyNameEn": "Contrail Management Co.,Ltd.",
+                "logoUrl": null,
+                "website": null,
+                "facebook": null,
+                "line": null
+            },
+            "title": "[Internship] Data Analyst",
+            "description": "<p><strong style=\"background-color: transparent;\">Responsibilities:</strong></p><ul><li><span style=\"background-color: transparent;\">Define key business metrics, definitions, and calculation logic used across business units.</span></li><li><span style=\"background-color: transparent;\">Ensure data accuracy, consistency, and reliability across multiple data sources.</span></li><li><span style=\"background-color: transparent;\">Establish basic data quality checks, controls, and documentation to improve long-term data trust.</span></li><li><span style=\"background-color: transparent;\">Improve the data collection and cleaning methods through automation</span></li><li><span style=\"background-color: transparent;\">Collaborate projects to extract, analyze, and gather data for advanced analytics and reporting tasks.</span></li></ul><p><br></p><p><strong style=\"background-color: transparent;\">หน้าที่และความรับผิดชอบ (Responsibilities):</strong></p><ul><li><span style=\"background-color: transparent;\">ตรวจสอบความถูกต้องและความน่าเชื่อถือของข้อมูลจากแหล่งข้อมูลหลายแหล่ง</span></li><li><span style=\"background-color: transparent;\">สร้างระบบตรวจสอบคุณภาพข้อมูล การควบคุม และเอกสารประกอบขั้นพื้นฐาน เพื่อเพิ่มความน่าเชื่อถือของข้อมูลในระยะยาว</span></li><li><span style=\"background-color: transparent;\">ปรับปรุงวิธีการรวบรวมและทำความสะอาดข้อมูลผ่านระบบอัตโนมัติ</span></li><li><span style=\"background-color: transparent;\">มีร่วมมือในโครงการต่างๆ เพื่อดึง วิเคราะห์ และรวบรวมข้อมูลสำหรับการวิเคราะห์ขั้นสูงและงานรายงาน</span></li></ul>",
+            "quota": 1,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 10000,
+            "compensationType": {
+                "compensationTypeId": 3,
+                "compensationType": "บาท/เดือน"
+            },
+            "workingCondition": "On-Site",
+            "requirements": "<p><strong style=\"background-color: transparent;\">Requirements:</strong></p><ul><li><span style=\"background-color: transparent;\">Bachelor's (undergraduate) candidate or a Master's (graduate) degree student in Computer Science or Software Engineering or equivalent industry experience.</span></li><li><span style=\"background-color: transparent;\">Programming skills in one or more general-purpose languages such as Go, Python, TypeScript/JavaScript, C#, Java, or a related language.</span></li><li><span style=\"background-color: transparent;\">Have knowledge or interest in Trading and cryptocurrency.</span></li><li><span style=\"background-color: transparent;\">Good understanding of algorithms, data structures, concurrency, and system design.</span></li><li><span style=\"background-color: transparent;\">Must be able to learn, understand, and apply new technologies</span></li></ul><p><br></p><p><strong style=\"background-color: transparent;\">คุณสมบัติ (Requirements):</strong></p><ul><li><span style=\"background-color: transparent;\">กำลังศึกษาอยู่ระดับปริญญาตรี หรือปริญญาโท สาขาวิทยาการคอมพิวเตอร์ วิศวกรรมซอฟต์แวร์ หรือมีประสบการณ์ในอุตสาหกรรมที่เทียบเท่า</span></li><li><span style=\"background-color: transparent;\">มีทักษะการเขียนโปรแกรมอย่างน้อยหนึ่งภาษาในกลุ่มภาษาสำหรับการใช้งานทั่วไป เช่น Go, Python, TypeScript/JavaScript, C#, Java หรือภาษาอื่นที่เกี่ยวข้อง</span></li><li><span style=\"background-color: transparent;\">มีความรู้หรือความสนใจด้านการซื้อขายและ Cryptocurrency</span></li><li><span style=\"background-color: transparent;\">มีความเข้าใจที่ดีเกี่ยวกับอัลกอริทึม โครงสร้างข้อมูล การประมวลผลแบบพร้อมกัน (Concurrency) และการออกแบบระบบ</span></li><li><span style=\"background-color: transparent;\">สามารถเรียนรู้ ทำความเข้าใจ และประยุกต์ใช้เทคโนโลยีใหม่ได้อย่างมีประสิทธิภาพ</span></li></ul>",
+            "tags": [],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "126/9 ซอย สุขุมวิท 63 (เอกมัย) แขวงคลองตันเหนือ เขตวัฒนา กรุงเทพมหานคร 10110 https://maps.app.goo.gl/grQa57Hinreq7HuF7",
+            "officeAddressLine2": "ออฟฟิศอยู่ในโครงการ Park Avenue สามารถเดินทางด้วยรถไฟฟ้า BTS ลงสถานีเอกมัยและต่อรถมอเตอร์ไซค์ มาที่อาคารปาร์คอเวนิวหรือขึ้นรถเมล์สาย 23 นำรถยนต์หรือรถมอเตอร์ไซค์มาเองได้",
+            "recruitmentContactChannel": "hr@contrail.management",
+            "openingDetailContactChannel": "hr@contrail.management",
+            "startDate": null,
+            "endDate": null,
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 3,
             "isBookmarked": false
         },
         {
@@ -16198,6 +16270,64 @@
             "isPublished": true,
             "isAcceptingApplication": true,
             "inStudentDraftCount": 0,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1659,
+            "sessionId": 5,
+            "company": {
+                "companyId": 175,
+                "companyNameTh": "ศูนย์ประสาทศาสตร์ โรงพยาบาลจุฬาลงกรณ์",
+                "companyNameEn": "Neuroscience Center",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/b421b59e-1eff-44ea-9b5a-fd0224864b6b?v=1765533727471",
+                "website": null,
+                "facebook": null,
+                "line": null
+            },
+            "title": "Elderly Activity Monitoring Intern",
+            "description": "<p><strong>Job Description</strong></p><p>The intern will contribute to the development of a motion-based system for evaluating elderly activities in a clinical research environment. The work includes designing a camera- and/or sensor-based motion capture setup and implementing pose and motion extraction using MediaPipe and/or OpenPose.</p><p><br></p><p>The intern will analyze motion data using Python and OpenCV to identify basic activities such as walking, sitting, and standing, and to derive simple mobility-related indicators. Results will be visualized to support interpretation by clinicians and researchers.</p><p><br></p><p>The intern will work under ethical and privacy guidelines for healthcare research, collaborate with clinical staff during scheduled onsite meetings, and prepare a final technical report and presentation.</p><p><br></p><p><strong>Available Topics</strong></p><p>1. Full-Body Motion Detection for Shoulder Rehabilitation (https://www.youtube.com/watch?v=KM36zdNUzZk)</p><p>2. Force Measurement with Posture-Aware Motion Detection (https://www.youtube.com/watch?v=8G2x1VYsFGU)</p><p><br></p><p><strong>Toolchain</strong></p><p>Camera &amp; sensor-based motion capture → MediaPipe / OpenPose → Python &amp; OpenCV →</p><p>Activity analysis &amp; visualization under clinical research standards</p><p><br></p><p><strong>Deliverables</strong></p><p>Motion analysis prototype or processing pipeline</p><p>Documentation and experimental results</p><p>Final report and presentation</p><p><br></p><p><strong>*Note*</strong></p><p>This position is for software and hardware development only and does not involve direct clinical diagnosis or treatment</p><p><br></p><p>**Joint supervision by Clinical Researchers and Ajarn Sukhum Sattaratnamai</p>",
+            "quota": 2,
+            "openForCooperativeInternship": false,
+            "compensationAmount": null,
+            "compensationType": null,
+            "workingCondition": "Hybrid",
+            "requirements": null,
+            "tags": [
+                {
+                    "tagId": 73,
+                    "tagName": "Python"
+                },
+                {
+                    "tagId": 459,
+                    "tagName": "OpenCV"
+                },
+                {
+                    "tagId": 720,
+                    "tagName": "Motion Detection"
+                },
+                {
+                    "tagId": 721,
+                    "tagName": "MediaPipe/OpenPose"
+                },
+                {
+                    "tagId": 722,
+                    "tagName": "Clinical Research"
+                },
+                {
+                    "tagId": 719,
+                    "tagName": "Elderly Activity Monitoring"
+                }
+            ],
+            "officeName": "Chula Neuroscience Center",
+            "officeAddressLine1": "S.T. Building (Geriatric Patients), 11th Floor King Chulalongkorn Memorial Hospital, The Thai Red Cross Society (Hybrid working mode: onsite once per week)",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": "2026-05-17T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -16263,6 +16393,440 @@
             "isBookmarked": false
         },
         {
+            "openingId": 1663,
+            "sessionId": 5,
+            "company": {
+                "companyId": 99,
+                "companyNameTh": "บริษัท นิภา เทคโนโลยี จำกัด",
+                "companyNameEn": "NIPA Technology Co., Ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/5c6540b3-a37d-492f-a5e1-7d7ddb0b62ab?v=1733153131792",
+                "website": "https://nipa.cloud/",
+                "facebook": "https://www.facebook.com/nipacloud",
+                "line": "@nipacloud"
+            },
+            "title": "Infrastructure Engineer Trainee ปี 2",
+            "description": "<p>**Who We're Looking For:**</p><p>- Second-year Computer Engineering Digital Technology students</p><p>- Passionate about cutting-edge cloud technology and infrastructure</p><p>- Strong analytical skills and curiosity about system architecture</p><p>- Eager to learn and contribute to open-source technology ecosystems</p><p><br></p><p>**What You'll Do:**</p><p>- Dive into design, deploy, and maintain scalable infrastructure</p><p>- Gain hands-on experience with OpenStack cloud technology</p><p>- Assist in system design, implementation, and optimization</p><p>- Learn to design, deploy, and maintain scalable infrastructure</p><p>- Learn advanced system architecture and cloud computing principles</p><p>- Work alongside industry experts in a dynamic, innovation-driven environment with state-of-the-art tools and technologies, building real-world systems.</p>",
+            "quota": 2,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 300,
+            "compensationType": {
+                "compensationTypeId": 1,
+                "compensationType": "บาท/วัน"
+            },
+            "workingCondition": "Hybrid",
+            "requirements": "<p>วัน/เวลา ปฏิบัติงาน : Hybrid ขึ้นอยู่กับทีมที่จะไปฝึกงานด้วย จะมี WFH 0, 1, 2 และ 3 วัน</p><p>การแต่งกาย : ตามใจ ถ้าอยากดูดี มีสกุล สร้างความประทับใจ แต่งให้เลิศได้เลย</p><p>*อัตราตอบแทน 300 บาท/วัน จะได้รับเฉพาะวันที่เข้ามาออฟฟิศ</p>",
+            "tags": [
+                {
+                    "tagId": 81,
+                    "tagName": "system Analysis"
+                },
+                {
+                    "tagId": 86,
+                    "tagName": "AI"
+                },
+                {
+                    "tagId": 109,
+                    "tagName": "TechnologySolutions"
+                },
+                {
+                    "tagId": 169,
+                    "tagName": "Trainee"
+                },
+                {
+                    "tagId": 201,
+                    "tagName": "Cloud"
+                },
+                {
+                    "tagId": 206,
+                    "tagName": "Kubernetes"
+                },
+                {
+                    "tagId": 235,
+                    "tagName": "local cloud"
+                },
+                {
+                    "tagId": 236,
+                    "tagName": "Network Engineer"
+                },
+                {
+                    "tagId": 237,
+                    "tagName": "private cloud"
+                },
+                {
+                    "tagId": 239,
+                    "tagName": "System Engineer"
+                },
+                {
+                    "tagId": 240,
+                    "tagName": "public cloud"
+                },
+                {
+                    "tagId": 241,
+                    "tagName": "Cloud Engineer"
+                },
+                {
+                    "tagId": 244,
+                    "tagName": "API Gateway"
+                },
+                {
+                    "tagId": 246,
+                    "tagName": "Cloud Infrastructure"
+                }
+            ],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "อาคาร โทรคมนาคม บางรัก ชั้น 4 ห้อง 401-402 เลขที่ 72 ถนนเจริญกรุง แขวงบางรัก เขตบางรัก กรุงเทพมหานคร  10500 \n  ",
+            "officeAddressLine2": "รถเมล์: ลงป้ายไปรษณีย์กลาง สาย 1, 93, 45, 16, 35, 75, 187 เดินต่อไปที่ตึก NT (อยู่หลังไปรษณีย์กลาง)//\nBTS: ลงสถานีสะพานตากสิน (ทางออก 3) ต่อรถเมล์สาย 1, 35, 75 ลงป้ายไปรษณีย์กลาง หรือต่อวินมอเตอร์ไซค์ลงตึก NT//\nMRT: ลงสถานีหัวลำโพง (ทางออก 1) ต่อรถเมล์สาย 75 ลงป้ายไปรษณีย์กลางหรือต่อวินมอเตอร์ไซค์ลงตึก NT//\nเรือข้ามฟาก/เรือด่วนเจ้าพระยา : ลงท่าเรือสี่พระยา เดินอีก 300 เมตร มาที่ตึก NT หรือต่อวินมอเตอร์ไซค์ลงตึก NT//\nรถยนต์ส่วนตัว : จอดที่ตึก NT อยู่หลังไปรษณีย์กลาง\n****** \n\nhttps://maps.app.goo.gl/qXzkufXeTWmNFJJ76?g_st=com.google.maps.preview.copy",
+            "recruitmentContactChannel": "โทร 02-639-7878\nEmail : Recruitment@nipa.co.th\nhttps://www.facebook.com/nipatalent",
+            "openingDetailContactChannel": "โทร 081-841-4949\nEmail : abhisak@nipa.co.th\nhttps://www.facebook.com/nipatalent",
+            "startDate": "2026-05-13T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1664,
+            "sessionId": 5,
+            "company": {
+                "companyId": 99,
+                "companyNameTh": "บริษัท นิภา เทคโนโลยี จำกัด",
+                "companyNameEn": "NIPA Technology Co., Ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/5c6540b3-a37d-492f-a5e1-7d7ddb0b62ab?v=1733153131792",
+                "website": "https://nipa.cloud/",
+                "facebook": "https://www.facebook.com/nipacloud",
+                "line": "@nipacloud"
+            },
+            "title": "Software Engineer Trainee ปี 2",
+            "description": "<p>**Who We're Looking For:**</p><p>- Second-year Computer Engineering Digital Technology students</p><p>- Innovative problem-solvers with a <strong>PASSION</strong> for efficient technology solutions</p><p>- Fluency or understanding of various backend languages, frameworks, and technology stacks.</p><p>- Understanding of Linux or Unix-like operating systems, <strong>container</strong> <strong>technologies</strong>, <strong>Kubernetes</strong>.</p><p>- Understanding of server-side application development, database-oriented application.</p><p>- Excellent verbal communication, interpersonal and self-management skills.</p><p>- Strong problem solving, analytical/logical thinking, detail-oriented person.</p><p><br></p><p>**What You'll Do:**</p><p>- Explore containerization, orchestration, and automation tools like <strong>Docker</strong> and <strong>Kubernetes</strong>.</p><p>-&nbsp;Understand cyber security in the cloud and streamline operations with industry best practices</p><p>- Compile and analyze data and codes to troubleshoot problems and identify areas for improvement.</p><p>- Develop security features to enhance the cloud user experience. Ensure strong security for every cluster.</p><p>- Define build systems, CI pipelines for both <strong>frontend</strong> and<strong> backend</strong> applications.</p><p>- Propose ideas for new applications, products, or features by monitoring industry trends and practices.</p>",
+            "quota": 1,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 300,
+            "compensationType": {
+                "compensationTypeId": 4,
+                "compensationType": "บาท (เหมาจ่าย)"
+            },
+            "workingCondition": "Hybrid",
+            "requirements": "<p>วัน/เวลา ปฏิบัติงาน : Hybrid ขึ้นอยู่กับทีมที่จะไปฝึกงานด้วย จะมี WFH 0, 1, 2 และ 3 วัน</p><p>การแต่งกาย : ตามใจ ถ้าอยากดูดี มีสกุล สร้างความประทับใจ แต่งให้เลิศได้เลย</p><p>*อัตราตอบแทน 300 บาท/วัน จะได้รับเฉพาะวันที่เข้ามาออฟฟิศ</p>",
+            "tags": [
+                {
+                    "tagId": 4,
+                    "tagName": "Intern"
+                },
+                {
+                    "tagId": 13,
+                    "tagName": "Frontend"
+                },
+                {
+                    "tagId": 32,
+                    "tagName": "infrastructure"
+                },
+                {
+                    "tagId": 34,
+                    "tagName": "devops"
+                },
+                {
+                    "tagId": 38,
+                    "tagName": "ai"
+                },
+                {
+                    "tagId": 41,
+                    "tagName": "Developer"
+                },
+                {
+                    "tagId": 70,
+                    "tagName": "FullStack"
+                },
+                {
+                    "tagId": 95,
+                    "tagName": "Generative AI"
+                },
+                {
+                    "tagId": 169,
+                    "tagName": "Trainee"
+                },
+                {
+                    "tagId": 182,
+                    "tagName": "deep learning"
+                },
+                {
+                    "tagId": 201,
+                    "tagName": "Cloud"
+                },
+                {
+                    "tagId": 206,
+                    "tagName": "Kubernetes"
+                },
+                {
+                    "tagId": 211,
+                    "tagName": "PostgreSQL"
+                },
+                {
+                    "tagId": 221,
+                    "tagName": "Docker"
+                },
+                {
+                    "tagId": 235,
+                    "tagName": "local cloud"
+                },
+                {
+                    "tagId": 237,
+                    "tagName": "private cloud"
+                },
+                {
+                    "tagId": 241,
+                    "tagName": "Cloud Engineer"
+                },
+                {
+                    "tagId": 246,
+                    "tagName": "Cloud Infrastructure"
+                },
+                {
+                    "tagId": 257,
+                    "tagName": "microservice"
+                },
+                {
+                    "tagId": 260,
+                    "tagName": "github"
+                },
+                {
+                    "tagId": 268,
+                    "tagName": "CI/CD"
+                },
+                {
+                    "tagId": 288,
+                    "tagName": "Software Developer"
+                },
+                {
+                    "tagId": 338,
+                    "tagName": "Cybersecurity"
+                }
+            ],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "อาคาร โทรคมนาคม บางรัก ชั้น 4 ห้อง 401-402 เลขที่ 72 ถนนเจริญกรุง แขวงบางรัก เขตบางรัก กรุงเทพมหานคร  10500 \n  ",
+            "officeAddressLine2": "รถเมล์: ลงป้ายไปรษณีย์กลาง สาย 1, 93, 45, 16, 35, 75, 187 เดินต่อไปที่ตึก NT (อยู่หลังไปรษณีย์กลาง)//\nBTS: ลงสถานีสะพานตากสิน (ทางออก 3) ต่อรถเมล์สาย 1, 35, 75 ลงป้ายไปรษณีย์กลาง หรือต่อวินมอเตอร์ไซค์ลงตึก NT//\nMRT: ลงสถานีหัวลำโพง (ทางออก 1) ต่อรถเมล์สาย 75 ลงป้ายไปรษณีย์กลางหรือต่อวินมอเตอร์ไซค์ลงตึก NT//\nเรือข้ามฟาก/เรือด่วนเจ้าพระยา : ลงท่าเรือสี่พระยา เดินอีก 300 เมตร มาที่ตึก NT หรือต่อวินมอเตอร์ไซค์ลงตึก NT//\nรถยนต์ส่วนตัว : จอดที่ตึก NT อยู่หลังไปรษณีย์กลาง\n*************\nhttps://maps.app.goo.gl/qXzkufXeTWmNFJJ76?g_st=com.google.maps.preview.copy",
+            "recruitmentContactChannel": "โทร 02-639-7878\nEmail : Recruitment@nipa.co.th\nhttps://www.facebook.com/nipatalent",
+            "openingDetailContactChannel": "โทร 081-841-4949\nEmail : abhisak@nipa.co.th\nhttps://www.facebook.com/nipatalent",
+            "startDate": "2026-05-13T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 0,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1669,
+            "sessionId": 5,
+            "company": {
+                "companyId": 180,
+                "companyNameTh": "บริษัท เลิร์นดู วิสาหกิจเพื่อสังคม จำกัด",
+                "companyNameEn": "Learndo Social Enterprise Co., Ltd",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/25c55631-4e8e-4962-ad41-dae315e61891?v=1771487064239",
+                "website": "",
+                "facebook": "https://www.facebook.com/LearnDoClub/",
+                "line": "@learndo"
+            },
+            "title": "Product Analyst & UX/UI Design",
+            "description": "<h3>อยากฝึกงานแบบสนุก ได้เจอโจทย์จริง ได้ลองทำอะไรใหม่ๆ ตื่นเต้นทุกวัน สมัครมาเลยจ้า</h3><h3>ใครรู้แล้วว่าชอบทำอะไร อยากทำอะไร มาคุยกันได้ ได้ลองแน่นอน แต่ถ้ายังไม่รู้ว่า จบแล้วจะทำงานอะไรดี ก็มาเลือกจากสิ่งที่มีได้ ที่นี่ก็คือที่ๆจะให้น้องๆได้ลองก่อนไปทำงานจริง</h3><h3><br></h3><h3>อ่ะจริงจังบ้าง เดี๋ยวไม่รู้ว่าจะมาสมัครฝึกงานแล้วทำอะไรดี</h3><h3><br></h3><h3><br></h3><h3><strong>Roles &amp; Responsibilities (R&amp;R)</strong></h3><p><strong>1. Customer Requirement &amp; Business Analysis</strong></p><ul><li>ประสานงานกับผู้ใช้งานและ Stakeholders เพื่อเก็บข้อมูลความต้องการ (Requirements) และวิเคราะห์โจทย์ทางธุรกิจ</li><li>ย่อยปัญหาของผู้ใช้งาน (Pain Points) ให้กลายเป็น User Stories และ Functional Requirements</li></ul><p><strong>2. Flow Analysis &amp; UX Design</strong></p><ul><li>ออกแบบ <strong>User Workflow</strong> และ <strong>Business Logic</strong> ของระบบให้ทำงานได้อย่างราบรื่น</li><li>สร้าง <strong>Wireframes</strong> และ <strong>High-Fidelity UI Design</strong> ที่สวยงามและตอบโจทย์การใช้งาน</li></ul><p><strong>3. POC &amp; Stakeholder Validation</strong></p><ul><li>พัฒนา <strong>Proof of Concept (POC)</strong> หรือ Prototype เพื่อนำไปพรีเซนต์และทดสอบกับลูกค้าจริง</li><li>ดำเนินการทดสอบกับผู้ใช้งาน (Usability Testing) เพื่อนำ Feedback มาพัฒนาต่อยอดให้ระบบสมบูรณ์ยิ่งขึ้น</li></ul><p><strong>Skill ที่ได้ใช้:</strong> Business &amp; Product Analysis, UX/UI Design, POC (Proof of Concept)</p><p>Skill ที่จะได้เพิ่มจากการมาฝึกงาน นอกเหนือจาก Hard Skill ที่ได้ จากงานด้านวิศวกรรมศาสตร์ คือ ได้เรียนรู้ Soft skill ฝึกการสัมภาษณ์ การตั้งคำถาม การเข้าใจกลุ่มลูกค้า ผู้ใช้งาน และ เข้าใจผู้คน เอาความรู้ทางด้านวิศวกรรมศาสตร์ มาประยุกต์ใช้กับโลกจริงได้ และที่สำคัญเข้าใจโลกธุรกิจ</p><p><br></p><p>หมายเหตุ : ช่วงฝึกงาน อาจมีให้ลงพื้นที่มาเที่ยวบางกะเจ้า บ้าง 1-2 ครั้ง หรือตามความเหมาะสมของลักษณะงาน</p>",
+            "quota": 10,
+            "openForCooperativeInternship": true,
+            "compensationAmount": null,
+            "compensationType": {
+                "compensationTypeId": 5,
+                "compensationType": "ไม่มีค่าตอบแทน"
+            },
+            "workingCondition": "Work From Home",
+            "requirements": "<h3>มาเลยจ้า อยากทำอะไร อยากฝึกเรื่องอะไรทั้งงานวิศวะ งานด้านบริหาร งานธุรกิจ Startup อยากเป็นผู้ประกอบการ ที่นี่ให้คุณได้ พี่ๆใจดี เป็นโอกาสดีที่จะได้เอาความรู้ สิ่งที่เรียนมาและ สิ่งที่สนใจมาทดสอบกับโลกจริง ถ้าอยากทำ Deep Tech ที่นี่อาจไม่ตอบโจทย์ แต่ถ้าอยาก เอา Technology มาประยุกต์ใช้ สามารถเกิด impact ได้จริง โดยเฉพาะเป็นประโยชน์ต่อสังคม ช่วยให้คุณภาพชีวิตคนดีขึ้น มาที่นี่ได้เลย</h3><p><br></p><p>สนใจสมัครฝึกงานให้ส่งคลิปวีดีโอ 1 นาทีมาที่ Line Official : @learndo</p><ol><li>แนะนำตัวเอง</li><li>ทำไมถึงอยากฝึกงานที่นี่ งานนี้</li><li>อยากได้อะไรจากการฝึกงาน</li><li>ให้นิยามตัวเอง 3 คำ จะนิยามว่าอะไร</li></ol>",
+            "tags": [
+                {
+                    "tagId": 2,
+                    "tagName": "UX/UI"
+                },
+                {
+                    "tagId": 21,
+                    "tagName": "Data Analyst"
+                },
+                {
+                    "tagId": 43,
+                    "tagName": "Business Analyst"
+                },
+                {
+                    "tagId": 60,
+                    "tagName": "startup"
+                },
+                {
+                    "tagId": 61,
+                    "tagName": "ux"
+                },
+                {
+                    "tagId": 175,
+                    "tagName": "planning"
+                },
+                {
+                    "tagId": 259,
+                    "tagName": "design thinking"
+                },
+                {
+                    "tagId": 271,
+                    "tagName": "UX/UI Designer"
+                },
+                {
+                    "tagId": 337,
+                    "tagName": "problem-solving"
+                },
+                {
+                    "tagId": 390,
+                    "tagName": "Workflow"
+                },
+                {
+                    "tagId": 391,
+                    "tagName": "Business Requirement"
+                },
+                {
+                    "tagId": 570,
+                    "tagName": "ฺBusiness Development"
+                },
+                {
+                    "tagId": 686,
+                    "tagName": "frameworks"
+                }
+            ],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "เลขที่ 68/7 ถนน เพชรหึงษ์47 แขวง พระประแดง เขต บางกอบัว จังหวัด สมุทรปราการ  10130 \n  ",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "Line : @learndo",
+            "openingDetailContactChannel": "Line : @learndo",
+            "startDate": "2026-05-15T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 2,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1670,
+            "sessionId": 5,
+            "company": {
+                "companyId": 175,
+                "companyNameTh": "ศูนย์ประสาทศาสตร์ โรงพยาบาลจุฬาลงกรณ์",
+                "companyNameEn": "Neuroscience Center",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/b421b59e-1eff-44ea-9b5a-fd0224864b6b?v=1765533727471",
+                "website": null,
+                "facebook": null,
+                "line": null
+            },
+            "title": "AI & Smart HVAC / Environmental Monitoring",
+            "description": "<p><strong>Job Description</strong></p><p>SRIPRASIT PHARMA COMPANY LIMITED offers an internship opportunity for CEDT Program students to contribute to the development of AI-driven environmental monitoring and HVAC analytics within a GMP pharmaceutical manufacturing facility. The internship focuses on software and data development to support analysis of temperature, humidity, differential pressure, and energy performance in controlled production environments.</p><p><br></p><p>The intern will work with real operational data to build data pipelines, develop analytics models, and create monitoring dashboards that support engineering and clinical teams. The work emphasizes time-series analysis, anomaly detection, and visualization in a regulated industrial context.</p><p><br></p><p><strong>Available Topics</strong></p><ol><li>HVAC energy analytics and performance visualization</li><li>AI-based anomaly detection for cleanroom environmental stability</li><li>Time-series forecasting of temperature and humidity in pharmaceutical areas</li><li>Predictive maintenance analytics for air handling units</li></ol><p><br></p><p><strong>Deliverables</strong></p><p>Structured and well-documented environmental/HVAC dataset</p><p>Working prototype of analytics or anomaly detection module</p><p>Real-time or near-real-time monitoring dashboard</p><p>Technical documentation of system design and methodology</p><p>Final technical report and presentation with recommendations for improvement</p><p><br></p><p><strong>*Note*</strong></p><p>This position is for software development only and does not involve direct control of HVAC system.</p><p><br></p><p>** The position is conducted under joint supervision by an HVAC specialist and Ajarn Sukhum Sattaratnamai.</p>",
+            "quota": 4,
+            "openForCooperativeInternship": false,
+            "compensationAmount": null,
+            "compensationType": null,
+            "workingCondition": "Hybrid",
+            "requirements": "<p>On-site at factory: First week (for orientation, data access, and system familiarization)</p><p>At faculty: Once per week for progress review and technical supervision</p><p>Remote work: Remaining time for development and analysis</p><p>Final presentation: Conducted on-site at the factory</p>",
+            "tags": [
+                {
+                    "tagId": 726,
+                    "tagName": "HVAC"
+                },
+                {
+                    "tagId": 727,
+                    "tagName": "Anomaly Detection"
+                },
+                {
+                    "tagId": 728,
+                    "tagName": "Pharmaceutical"
+                },
+                {
+                    "tagId": 729,
+                    "tagName": "Predictive Maintenance"
+                },
+                {
+                    "tagId": 730,
+                    "tagName": "Smart Factory"
+                }
+            ],
+            "officeName": "SRIPRASIT PHARMA COMPANY LIMITED",
+            "officeAddressLine1": "216 Moo 6, Suanluang, Krathum Baen, Samut Sakhon 74110, Thailand",
+            "officeAddressLine2": "https://maps.app.goo.gl/rxPn1WhLcF5bkNut7",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": "2026-05-17T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 0,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1671,
+            "sessionId": 5,
+            "company": {
+                "companyId": 92,
+                "companyNameTh": "บริษัท สมาร์ทชิฟท์โซลูชั่น จำกัด",
+                "companyNameEn": "Smart Shift Solution Co., Ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/00e5480c-8398-4707-96af-3bea0990b73b?v=1735015215669",
+                "website": "https://www.smartshift.co.th",
+                "facebook": "https://www.facebook.com/smartshiftsolution",
+                "line": ""
+            },
+            "title": "Full Stack Developer Intern 2",
+            "description": "<h1><strong>💻 The Role: Building &amp; Innovating</strong></h1><p>As a Full-Stack Developer Intern, you'll be involved in all phases of the development lifecycle, from frontend interface design to backend data management and AI integration.</p><ul><li><strong>Full-Stack Power:</strong> Work with modern stacks like Next.js, TypeScript, Kotlin, Spring Boot, Grails, and PostgreSQL.</li><li><strong>AI Integration: </strong>Contribute to integrating cutting-edge technologies like ChatGPT and Gemini into business consultancy tools, turning raw data into actionable intelligence.</li><li>You'll receive real <strong>mentorship </strong>in debugging, optimization, and full-stack best practices while working closely with our experienced team leads and project managers.</li></ul>",
+            "quota": 1,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 400,
+            "compensationType": {
+                "compensationTypeId": 1,
+                "compensationType": "บาท/วัน"
+            },
+            "workingCondition": "Hybrid",
+            "requirements": "<p>เงื่อนไขการทำงานเพิ่มเติม</p><p>ค่าตอบแทนเริ่มต้น 400 บาท/วัน ปรับขึ้นตามความสามารถจริง</p><p>สามารถรับโครงการไปทำต่อได้แม้จะอยู่นอกช่วงฝึกงาน</p>",
+            "tags": [
+                {
+                    "tagId": 3,
+                    "tagName": "Software Engineer"
+                },
+                {
+                    "tagId": 13,
+                    "tagName": "Frontend"
+                },
+                {
+                    "tagId": 36,
+                    "tagName": "Backend"
+                },
+                {
+                    "tagId": 42,
+                    "tagName": "Programmer"
+                },
+                {
+                    "tagId": 58,
+                    "tagName": "web application"
+                },
+                {
+                    "tagId": 70,
+                    "tagName": "FullStack"
+                },
+                {
+                    "tagId": 90,
+                    "tagName": "software development"
+                },
+                {
+                    "tagId": 211,
+                    "tagName": "PostgreSQL"
+                }
+            ],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "อาคาร Prime Hotel Central Station Bangkok ชั้น 4 ห้อง 23/34-35  4D เลขที่ 23/34-35 ถนน ไตรมิตร แขวง สัมพันธวงศ์ เขต ตลาดน้อย จังหวัด กรุงเทพมหานคร  10100 \n  ",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "ช่องทางติดต่อสอบถามเกี่ยวกับการรับสมัคร\n\nEmail: Info@smartshift.co.th\nLinkedIn: Smart Shift Solutions\nFacebook: Smart Shift Solutions\nPhone: 080 883 9993 (P'Sith/พี่สิทธิ์ - Project Manager)",
+            "openingDetailContactChannel": "ช่องทางติดต่อสอบถามเกี่ยวกับการรับสมัคร\n\nEmail: Info@smartshift.co.th\nLinkedIn: Smart Shift Solutions\nFacebook: Smart Shift Solutions\nPhone: 080 883 9993 (P'Sith/พี่สิทธิ์ - Project Manager)",
+            "startDate": "2026-02-28T17:00:00.000Z",
+            "endDate": "2026-12-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
             "openingId": 1673,
             "sessionId": 5,
             "company": {
@@ -16324,7 +16888,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -16397,7 +16961,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -16462,7 +17026,7 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 1,
             "isBookmarked": false
         },
         {
@@ -16681,7 +17245,56 @@
             "endDate": "2026-07-30T17:00:00.000Z",
             "isPublished": true,
             "isAcceptingApplication": true,
-            "inStudentDraftCount": 0,
+            "inStudentDraftCount": 2,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1689,
+            "sessionId": 5,
+            "company": {
+                "companyId": 31,
+                "companyNameTh": "บริษัท เพลย์ทอเรียม โซลูชันส์ จำกัด (มหาชน)",
+                "companyNameEn": "Playtorium",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/858f9fe0-83bd-474e-a1c1-19d5f100cb27?v=1699953823377",
+                "website": "https://playtorium.co.th/",
+                "facebook": "https://www.facebook.com/PlaytoriumSolutions",
+                "line": "ID: nichapatthaikul"
+            },
+            "title": "Software Tester สำหรับนิสิตปี 3",
+            "description": "<p><strong>Functional Test, Performance/Load Test, Automate Test&nbsp;</strong></p><p>• Design test case and implement system test</p><p>• Record/analyze test result and provide feedback to development team</p><p>• Perform reporting the defect to the bug tracking system</p><p>• Create automate test script by using&nbsp;&nbsp;<strong>Robot framework and&nbsp;Cypress</strong>&nbsp;<strong>for Automate test position</strong></p><p>• Create performance test script&nbsp;&nbsp;by using&nbsp;<strong>LoadRunner and Jmeter</strong>&nbsp;&nbsp;<strong>for Performance test position</strong></p><p>• Co-ordinate with Developers , SA, and PM to solve software error</p><p>• Develop project-related documents such as user acceptance test document and user manual</p><p>• Coordinate and facilitate the User Acceptance Test</p>",
+            "quota": 5,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 500,
+            "compensationType": {
+                "compensationTypeId": 1,
+                "compensationType": "บาท/วัน"
+            },
+            "workingCondition": "Hybrid",
+            "requirements": "<p>บริษัทขอสงวนสิทธิ์ในการพิจารณาตำแหน่งว่าจะได้ฝึกในส่วนงานใดของ Software Tester</p><p>ซึ่งจะขึ้นอยู่กับงานที่มีในขณะนั้น และหัวหน้างานพิจารณาโดยอ้างอิงจากความถนัดและความต้องการของน้องๆร่วมด้วย</p><p><br></p><p>***บริษัทฯ ขอสงวนสิทธิ์ในการพิจารณาเฉพาะผู้ที่มีความประสงค์ทำงานอย่างต่อเนื่องกับทางบริษัทฯ  โดยสามารถเริ่มจากฝึกงาน ต่อเนื่องไปสหกิจ และมีโอกาสพัฒนาเป็นพนักงานประจำในอนาคต***</p>",
+            "tags": [
+                {
+                    "tagId": 4,
+                    "tagName": "Intern"
+                },
+                {
+                    "tagId": 289,
+                    "tagName": "Software QA"
+                },
+                {
+                    "tagId": 434,
+                    "tagName": "Software Tester"
+                }
+            ],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "อาคาร ยาคูลท์ ชั้น 15 เลขที่ 1025 ถนน พหลโยธิน แขวง พญาไท เขต พญาไท จังหวัด กรุงเทพมหานคร  10400 \n  ",
+            "officeAddressLine2": "BTS สนามเป้า จากสถานี 0 เมตร ถึงอาคารยาคูลท์",
+            "recruitmentContactChannel": "E-mail: people@playtorium.co.th",
+            "openingDetailContactChannel": "E-mail: people@playtorium.co.th",
+            "startDate": "2026-06-01T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 2,
             "isBookmarked": false
         },
         {
@@ -16735,13 +17348,430 @@
             "endDate": null,
             "isPublished": true,
             "isAcceptingApplication": true,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1691,
+            "sessionId": 5,
+            "company": {
+                "companyId": 31,
+                "companyNameTh": "บริษัท เพลย์ทอเรียม โซลูชันส์ จำกัด (มหาชน)",
+                "companyNameEn": "Playtorium",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/858f9fe0-83bd-474e-a1c1-19d5f100cb27?v=1699953823377",
+                "website": "https://playtorium.co.th/",
+                "facebook": "https://www.facebook.com/PlaytoriumSolutions",
+                "line": "ID: nichapatthaikul"
+            },
+            "title": "Software Developer สำหรับนิสิตปี 2",
+            "description": "<p>- Develop high-quality software by producing clean, efficient code</p><p>- Perform unit testing</p><p>- Debug and refactor code</p><p>- Collaborate with internal and external teams to fix and improve software</p>",
+            "quota": 2,
+            "openForCooperativeInternship": false,
+            "compensationAmount": 400,
+            "compensationType": {
+                "compensationTypeId": 1,
+                "compensationType": "บาท/วัน"
+            },
+            "workingCondition": "Hybrid",
+            "requirements": "<p>บริษัทขอสงวนสิทธิ์ในการพิจารณาตำแหน่งว่าจะได้ฝึกในส่วนงานใดของ Software Developer</p><p>ซึ่งจะขึ้นอยู่กับงานที่มีในขณะนั้น และหัวหน้างานพิจารณาโดยอ้างอิงจากความถนัดและความต้องการของน้องๆร่วมด้วย</p>",
+            "tags": [
+                {
+                    "tagId": 4,
+                    "tagName": "Intern"
+                },
+                {
+                    "tagId": 288,
+                    "tagName": "Software Developer"
+                }
+            ],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "อาคาร ยาคูลท์ ชั้น 15 เลขที่ 1025 ถนน พหลโยธิน แขวง พญาไท เขต พญาไท จังหวัด กรุงเทพมหานคร  10400 \n  ",
+            "officeAddressLine2": "BTS สนามเป้า จากสถานี 0 เมตร ถึงอาคารยาคูลท์",
+            "recruitmentContactChannel": "E-mail: people@playtorium.co.th",
+            "openingDetailContactChannel": "E-mail: people@playtorium.co.th",
+            "startDate": "2026-06-01T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 3,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1692,
+            "sessionId": 5,
+            "company": {
+                "companyId": 31,
+                "companyNameTh": "บริษัท เพลย์ทอเรียม โซลูชันส์ จำกัด (มหาชน)",
+                "companyNameEn": "Playtorium",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/858f9fe0-83bd-474e-a1c1-19d5f100cb27?v=1699953823377",
+                "website": "https://playtorium.co.th/",
+                "facebook": "https://www.facebook.com/PlaytoriumSolutions",
+                "line": "ID: nichapatthaikul"
+            },
+            "title": "Software Developer สำหรับนิสิตปี 3",
+            "description": "<p>- Develop high-quality software by producing clean, efficient code</p><p>- Perform unit testing</p><p>- Debug and refactor code</p><p>- Collaborate with internal and external teams to fix and improve software</p>",
+            "quota": 3,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 500,
+            "compensationType": {
+                "compensationTypeId": 1,
+                "compensationType": "บาท/วัน"
+            },
+            "workingCondition": "Hybrid",
+            "requirements": "<p>บริษัทขอสงวนสิทธิ์ในการพิจารณาตำแหน่งว่าจะได้ฝึกในส่วนงานใดของ Software Developer</p><p>ซึ่งจะขึ้นอยู่กับงานที่มีในขณะนั้น และหัวหน้างานพิจารณาโดยอ้างอิงจากความถนัดและความต้องการของน้องๆร่วมด้วย</p><p><br></p><p>***บริษัทฯ ขอสงวนสิทธิ์ในการพิจารณาเฉพาะผู้ที่มีความประสงค์ทำงานอย่างต่อเนื่องกับทางบริษัทฯ โดยสามารถเริ่มจากฝึกงาน ต่อเนื่องไปสหกิจ และมีโอกาสพัฒนาเป็นพนักงานประจำในอนาคต***</p>",
+            "tags": [
+                {
+                    "tagId": 4,
+                    "tagName": "Intern"
+                },
+                {
+                    "tagId": 288,
+                    "tagName": "Software Developer"
+                }
+            ],
+            "officeName": "สำนักงานใหญ่",
+            "officeAddressLine1": "อาคาร ยาคูลท์ ชั้น 15 เลขที่ 1025 ถนน พหลโยธิน แขวง พญาไท เขต พญาไท จังหวัด กรุงเทพมหานคร  10400 \n  ",
+            "officeAddressLine2": "BTS สนามเป้า จากสถานี 0 เมตร ถึงอาคารยาคูลท์",
+            "recruitmentContactChannel": "E-mail: people@playtorium.co.th",
+            "openingDetailContactChannel": "E-mail: people@playtorium.co.th",
+            "startDate": "2026-06-01T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 2,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1693,
+            "sessionId": 5,
+            "company": {
+                "companyId": 91,
+                "companyNameTh": "บริษัท ทรานสคอสมอส (ไทยแลนด์) จำกัด",
+                "companyNameEn": "Transcosmos (Thailand) Co., Ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/b6de2499-8f1e-4831-b67f-d05ae897f596?v=1731394648346",
+                "website": "https://www.trans-cosmos.co.th/home",
+                "facebook": "https://www.facebook.com/transcosmos.th/",
+                "line": ""
+            },
+            "title": " Innovation Solution",
+            "description": "<ul><li>Perform data analysis, data cleaning, and data preparation to support AI and Digital Solution Implementation.</li><li>Design, configure, and implement a structured Conversational AI Flow (Rule-based &amp; AI based) on Omni-channel platforms, including decision trees and logic mapping.</li><li>Explore, evaluate, and support implementation of Technology Solutions such as AI Chatbot, Automation tools, CRM systems, and Microsoft Power Platform (Power Apps, Power Automate, Power BI).</li><li>Support development of applications and workflows, and dashboards using low-code/no code platforms to enhance business operations and reporting.</li><li>Assist in prompt engineering, system testing, performance evaluation, and solution optimization (accuracy improvement, error reduction, usability enhancement).</li><li>Collaborate closely with Tech, Data, and Operations teams throughout the Solution Development Lifecycle.</li></ul><p><strong><u>Qualifications:</u></strong></p><ul><li>Current college student or recent graduate in Computer Science, Data Science, AI, Business Tech, Engineering, or related fields.</li><li>Strong interest in AI, Automation, Digital Platforms, and Solution Development.</li><li>Basic understanding of AI tools (e.g., ChatGPT, Prompt engineering, Automation Platforms) or a low-code/no-code platform is an advantage.</li><li>Strong logical thinking and structured problem-solving skills.</li><li>Proactive, willing to learn, and able to work collaboratively in a team environment.</li><li>Good command of Thai and English.</li><li>Able to handle confidential information responsibly.&nbsp;</li></ul>",
+            "quota": 1,
+            "openForCooperativeInternship": true,
+            "compensationAmount": 450,
+            "compensationType": {
+                "compensationTypeId": 1,
+                "compensationType": "บาท/วัน"
+            },
+            "workingCondition": "On-Site",
+            "requirements": null,
+            "tags": [
+                {
+                    "tagId": 54,
+                    "tagName": "PowerBI"
+                },
+                {
+                    "tagId": 86,
+                    "tagName": "AI"
+                },
+                {
+                    "tagId": 269,
+                    "tagName": "PowerApps"
+                },
+                {
+                    "tagId": 278,
+                    "tagName": "PowerAutomate"
+                },
+                {
+                    "tagId": 501,
+                    "tagName": "IT solution"
+                },
+                {
+                    "tagId": 502,
+                    "tagName": "Solution Proposal"
+                },
+                {
+                    "tagId": 512,
+                    "tagName": "Automate test"
+                }
+            ],
+            "officeName": "อาคารภคินทร์พระราม 9 ",
+            "officeAddressLine1": "9 ถ. รัชดาภิเษก แขวงดินแดง เขตดินแดง กรุงเทพมหานคร 10400",
+            "officeAddressLine2": "อาคารอยู่ติดกับอาคารฟอร์ทจูน สามารถเดินทางผ่าน MRT ลงสถานีพระราม 9 ทางออก 1 เดินประมาณ400-500เมตรจะถึงอาคาร",
+            "recruitmentContactChannel": "academy@trans-cosmos.co.th \nka.sunisa@trans-cosmos.co.th",
+            "openingDetailContactChannel": "academy@trans-cosmos.co.th \nka.sunisa@trans-cosmos.co.th",
+            "startDate": "2026-04-30T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 3,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1706,
+            "sessionId": 5,
+            "company": {
+                "companyId": 6,
+                "companyNameTh": "ธนาคาร กรุงไทย จำกัด (มหาชน)",
+                "companyNameEn": "KTB",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/f08f48d7-b822-4c15-9c72-027e8598b354?v=1700541103414",
+                "website": "https://krungthai.com/th/personal",
+                "facebook": "https://www.facebook.com/krungthaibank/?locale=th_TH",
+                "line": ""
+            },
+            "title": "Krungthai Internship Program 2026",
+            "description": "<p><span style=\"background-color: transparent;\">Start with One Meaningful Step — Join Krungthai Internship Program 2026! 🌟</span></p><p><span style=\"background-color: transparent;\">Are you ready to explore a world of possibilities?</span></p><p><span style=\"background-color: transparent;\">Krungthai Bank invites university students to gain hands-on experience, learn from experts, and grow with real impact through Krungthai Internship Program 2026.</span></p><p><br></p><p><br></p><p><span style=\"background-color: transparent;\">📅 Application Period: Until 6 March 2026</span></p><p><span style=\"background-color: transparent;\">📝 Assessment &amp; Interview: March 2026</span></p><p><span style=\"background-color: transparent;\">📣 Announcement: April 2026</span></p><p><span style=\"background-color: transparent;\">🌟 Start Program: June 2026&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><ul><li><span style=\"background-color: transparent;\">Project-based Internship</span></li><li><span style=\"background-color: transparent;\">Internship Camp</span></li><li><span style=\"background-color: transparent;\">Training Programs</span></li><li><span style=\"background-color: transparent;\">Certification</span></li><li><span style=\"background-color: transparent;\">etc...</span></li></ul><p><span style=\"background-color: transparent;\">&nbsp;&nbsp;* Please note the time might be changed.</span></p><p><br></p><p><span style=\"background-color: transparent;\">👉 Apply now and explore a world of possibilities! 👉 Via google form </span></p><p><a rel=\"noopener noreferrer\" href=\"https://forms.gle/zKoP5NqdsvhcFMbq6\"><strong>https://forms.gle/zKoP5NqdsvhcFMbq6</strong></a></p>",
+            "quota": 3,
+            "openForCooperativeInternship": false,
+            "compensationAmount": 600,
+            "compensationType": {
+                "compensationTypeId": 1,
+                "compensationType": "บาท/วัน"
+            },
+            "workingCondition": "Hybrid",
+            "requirements": "<p>นิสิตต้องเข้าปฏิบัติงานและเข้าร่วมกิจกรรมต่าง ๆ ของโครงการ ไม่น้อยกว่า 80% ของระยะเวลาโครงการทั้งหมด</p>",
+            "tags": [
+                {
+                    "tagId": 2,
+                    "tagName": "UX/UI"
+                },
+                {
+                    "tagId": 4,
+                    "tagName": "Intern"
+                },
+                {
+                    "tagId": 13,
+                    "tagName": "Frontend"
+                },
+                {
+                    "tagId": 53,
+                    "tagName": "Data Engineer"
+                },
+                {
+                    "tagId": 58,
+                    "tagName": "web application"
+                },
+                {
+                    "tagId": 59,
+                    "tagName": "dashboard"
+                },
+                {
+                    "tagId": 76,
+                    "tagName": "Database"
+                },
+                {
+                    "tagId": 86,
+                    "tagName": "AI"
+                },
+                {
+                    "tagId": 110,
+                    "tagName": "IT"
+                },
+                {
+                    "tagId": 249,
+                    "tagName": "Project Coordinator"
+                },
+                {
+                    "tagId": 315,
+                    "tagName": "mobile application"
+                },
+                {
+                    "tagId": 733,
+                    "tagName": "legal"
+                },
+                {
+                    "tagId": 734,
+                    "tagName": "finance"
+                },
+                {
+                    "tagId": 735,
+                    "tagName": "wealth"
+                },
+                {
+                    "tagId": 736,
+                    "tagName": "ESG"
+                }
+            ],
+            "officeName": "Krungthai Bank",
+            "officeAddressLine1": "อาคาร สำนักงานใหญ่ (อาคาร 1) เลขที่ 35 ถนน สุขุมวิท แขวง วัฒนา เขต คลองเตยเหนือ จังหวัด กรุงเทพฯ  10110 \n  ",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": "2026-05-31T17:00:00.000Z",
+            "endDate": "2026-07-30T17:00:00.000Z",
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 10,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1709,
+            "sessionId": 5,
+            "company": {
+                "companyId": 137,
+                "companyNameTh": "บริษัท เวแอม จำกัด ",
+                "companyNameEn": "vaam co.,ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/017eeb43-f0ca-4aba-9968-a87742780e81?v=1772037003330",
+                "website": null,
+                "facebook": null,
+                "line": null
+            },
+            "title": "IoT Firmware Engineer",
+            "description": "<p>พัฒนาอุปกรณ์ IoT</p><ul><li>พัฒนา FW ในระดับการ integration Virtual Machine เช่น LUA เข้าบน อุปกรณ์ขนาดเล็ก เช่น RP2350</li><li>พัฒนา Driver (ANSI C-LUA Library) สำหรับ เซนเซอร์ต่างๆ</li></ul>",
+            "quota": 2,
+            "openForCooperativeInternship": true,
+            "compensationAmount": null,
+            "compensationType": null,
+            "workingCondition": "Hybrid",
+            "requirements": "<p>ต้องนำส่งงานตามที่ได้รับมอบหมายตามเวลา</p>",
+            "tags": [],
+            "officeName": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช",
+            "officeAddressLine1": "ใกล้สามย่านมิตรทาวด์",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": null,
+            "endDate": null,
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1710,
+            "sessionId": 5,
+            "company": {
+                "companyId": 137,
+                "companyNameTh": "บริษัท เวแอม จำกัด ",
+                "companyNameEn": "vaam co.,ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/017eeb43-f0ca-4aba-9968-a87742780e81?v=1772037003330",
+                "website": null,
+                "facebook": null,
+                "line": null
+            },
+            "title": "AAIOT",
+            "description": "<p>Agentic AI IoT Engineer</p><ul><li>พัฒนาเชื่อมต่อ Agentic AI เข้ากับระบบ IoT </li><li>เช่นการเชื่อมต่อกับ Agentic AI ต่างๆ</li><li>หรือ Platform AI เช่น MimiClaw หรือคล้ายเคียง</li><li class=\"ql-indent-1\">เป้าหมายเพื่อพัฒนาต้นแบบการใช้งานเช่น</li><li class=\"ql-indent-1\">1. ระบบปลูกพืชอัตโนมัติ</li><li class=\"ql-indent-1\">2. ระบบอำนวยการทำวิจัยในแลปเคมี</li></ul>",
+            "quota": 3,
+            "openForCooperativeInternship": true,
+            "compensationAmount": null,
+            "compensationType": null,
+            "workingCondition": "Hybrid",
+            "requirements": "<p>ต้องนำส่งงานตามที่ได้รับมอบหมายตามเวลา</p><p><br></p><p><br></p>",
+            "tags": [],
+            "officeName": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช",
+            "officeAddressLine1": "ใกล้สามย่านมิตรทาวด์",
+            "officeAddressLine2": "หากมีความจำเป็นต้องติดตั้งทดสอบระบบที่แปลงผัก จะทำการทดลองที่ออฟฟิตอ่อนนุช",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": null,
+            "endDate": null,
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1711,
+            "sessionId": 5,
+            "company": {
+                "companyId": 137,
+                "companyNameTh": "บริษัท เวแอม จำกัด ",
+                "companyNameEn": "vaam co.,ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/017eeb43-f0ca-4aba-9968-a87742780e81?v=1772037003330",
+                "website": null,
+                "facebook": null,
+                "line": null
+            },
+            "title": "Antidrone AI Engineer",
+            "description": "<p>พัฒนาระบบตรวจจับวัตถุ และต่อต้านโดรนต้นแบบ</p><ul><li>พัฒนานำเอา Model AI ที่เหมาะสม เช่น YOLO เพื่อใช้ในการตรวจจับวัตถุบนท้องฟ้า</li><li class=\"ql-indent-1\">เชื่อมต่อข้อมูลเข้ากับแท่นยิง เพื่อใช้ติดตามตำแหน่งวัตถุ </li><li class=\"ql-indent-1\">เชื่อมต่อตัวรับสัญญาณ SDR ผ่าน SDR USB (Linux) เข้าสู่ระบบติดตาม</li></ul>",
+            "quota": 3,
+            "openForCooperativeInternship": true,
+            "compensationAmount": null,
+            "compensationType": null,
+            "workingCondition": "Hybrid",
+            "requirements": "<p>ต้องนำส่งงานตามที่ได้รับมอบหมายตามเวลา</p>",
+            "tags": [],
+            "officeName": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช",
+            "officeAddressLine1": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช หรือนอกสถานที่",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": null,
+            "endDate": null,
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 1,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1713,
+            "sessionId": 5,
+            "company": {
+                "companyId": 138,
+                "companyNameTh": "บริษัท สวีทสเปกตรัม จำกัด ",
+                "companyNameEn": "SweetSpectrum co.,ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/59da6b57-7a05-42de-8e9f-6588c5ef3bf1?v=1772040170905",
+                "website": "http://www.sweet-spectrum.com/ss/",
+                "facebook": "",
+                "line": ""
+            },
+            "title": "AI HW Devloper",
+            "description": "<p>พัฒนาระบบ AI-Computer Vision สำหรับงานอาหารและเกษตรกรรม</p><ul><li>เชื่อมต่อกล้อง Thermal, Hyperspectral, และ RGB</li><li>พัฒนาเชื่อมต่อกล้องบนระบบ Embeded, Linux ผ่านทาง SW Stack เช่น V4L, gStreammer</li><li>เชื่อมต่อเพื่อประมวลผลภาพด้วย AI เช่น โมเดล YOLO เป็นต้น</li><li>พัฒนาอัลกอริทึ่มในการประมวลผลข้อมูลจาก Hyperspectral และ Thermal Camera</li></ul><p><br></p>",
+            "quota": 2,
+            "openForCooperativeInternship": true,
+            "compensationAmount": null,
+            "compensationType": null,
+            "workingCondition": "Hybrid",
+            "requirements": "<p>ต้องนำส่งงานตามที่ได้รับมอบหมายตามเวลา</p>",
+            "tags": [],
+            "officeName": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช",
+            "officeAddressLine1": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": null,
+            "endDate": null,
+            "isPublished": true,
+            "isAcceptingApplication": true,
+            "inStudentDraftCount": 0,
+            "isBookmarked": false
+        },
+        {
+            "openingId": 1714,
+            "sessionId": 5,
+            "company": {
+                "companyId": 138,
+                "companyNameTh": "บริษัท สวีทสเปกตรัม จำกัด ",
+                "companyNameEn": "SweetSpectrum co.,ltd.",
+                "logoUrl": "https://cedtintern.cp.eng.chula.ac.th/api/common/files/company/logo/59da6b57-7a05-42de-8e9f-6588c5ef3bf1?v=1772040170905",
+                "website": "http://www.sweet-spectrum.com/ss/",
+                "facebook": "",
+                "line": ""
+            },
+            "title": "Agentic AI Engineer",
+            "description": "<p>Agentic AI IoT Engineer</p><ul><li>เชื่อมต่อข้อมูลเกี่ยวกับอาหาร เข้าสู่ระบบฝังตัว , Linux Based</li><li>เชื่อมต่อระบบพูด-เสียง เพื่อสั่งงานระบบ </li><li>เชื่อมต่อระบบ Agentic AI เช่น Mimiclaw หรือเทียบเท่า</li></ul>",
+            "quota": 2,
+            "openForCooperativeInternship": true,
+            "compensationAmount": null,
+            "compensationType": null,
+            "workingCondition": "Hybrid",
+            "requirements": "<p>ต้องนำส่งงานตามที่ได้รับมอบหมายตามเวลา</p>",
+            "tags": [],
+            "officeName": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช",
+            "officeAddressLine1": "ใกล้สามย่านมิตรทาวด์ หรือ อ่อนนุช",
+            "officeAddressLine2": "",
+            "recruitmentContactChannel": "",
+            "openingDetailContactChannel": "",
+            "startDate": null,
+            "endDate": null,
+            "isPublished": true,
+            "isAcceptingApplication": true,
             "inStudentDraftCount": 0,
             "isBookmarked": false
         }
     ],
     "meta": {
-        "totalItem": 285,
-        "itemCount": 285,
+        "totalItem": 303,
+        "itemCount": 303,
         "itemsPerPage": 1000,
         "totalPage": 1,
         "currentPage": 1
