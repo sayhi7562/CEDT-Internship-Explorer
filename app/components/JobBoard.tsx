@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { collectTagsFromJobs } from "@/app/lib/intern-transform";
 import type { JobListing } from "@/app/lib/jobs";
 
 type Job = JobListing;
 
 type JobBoardProps = {
-  jobs: Job[];
-  allTags: string[];
+  initialJobs: Job[];
+  initialTags: string[];
 };
 
 type WorkingConditionCategory = JobListing["workingConditionCategory"];
@@ -105,7 +106,14 @@ function buildFilterableJobs(
   return sorted;
 }
 
-const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
+const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
+  const [dataSource, setDataSource] = useState<"local" | "api">("local");
+  const [cookieValue, setCookieValue] = useState<string>("");
+  const [remoteJobs, setRemoteJobs] = useState<Job[] | null>(null);
+  const [remoteTags, setRemoteTags] = useState<string[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string>("");
   const [selectedWorkingConditions, setSelectedWorkingConditions] = useState<
     WorkingConditionCategory[]
@@ -116,10 +124,21 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
     "compensation",
   );
 
+  const activeJobs = dataSource === "local" ? initialJobs : (remoteJobs ?? []);
+  const activeTags = useMemo(() => {
+    if (dataSource === "local") {
+      return initialTags;
+    }
+    if (remoteTags) {
+      return remoteTags;
+    }
+    return collectTagsFromJobs(activeJobs);
+  }, [activeJobs, dataSource, initialTags, remoteTags]);
+
   const displayJobs = useMemo(
     () =>
       buildFilterableJobs(
-        jobs,
+        activeJobs,
         selectedTag,
         selectedWorkingConditions,
         searchQuery,
@@ -127,7 +146,7 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
         sortMode,
       ),
     [
-      jobs,
+      activeJobs,
       selectedTag,
       selectedWorkingConditions,
       searchQuery,
@@ -135,6 +154,68 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
       sortMode,
     ],
   );
+
+  useEffect(() => {
+    setLoadError(null);
+    if (dataSource === "local") {
+      setCookieValue("");
+    }
+  }, [dataSource]);
+
+  useEffect(() => {
+    if (
+      selectedTag &&
+      !activeTags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
+    ) {
+      setSelectedTag("");
+    }
+  }, [activeTags, selectedTag]);
+
+  const loadRemoteJobs = async () => {
+    const trimmedCookie = cookieValue.trim();
+    if (!trimmedCookie) {
+      setLoadError("กรุณากรอก cookie ก่อนโหลดข้อมูล");
+      return;
+    }
+
+    setIsLoading(true);
+    setLoadError(null);
+
+    try {
+      const response = await fetch("/api/intern", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cookie: trimmedCookie }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(
+          payload?.error ?? `โหลดข้อมูลไม่สำเร็จ (HTTP ${response.status})`,
+        );
+      }
+
+      const payload = (await response.json()) as {
+        jobs: Job[];
+        allTags: string[];
+        fetchedAt?: string | null;
+      };
+
+      setRemoteJobs(payload.jobs ?? []);
+      setRemoteTags(payload.allTags ?? []);
+      setLastUpdated(payload.fetchedAt ?? null);
+    } catch (error) {
+      setLoadError(
+        error instanceof Error ? error.message : "โหลดข้อมูลไม่สำเร็จ",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const toggleWorkingCondition = (value: WorkingConditionCategory) => {
     setSelectedWorkingConditions((prev) => {
@@ -147,6 +228,79 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
 
   return (
     <section className="flex flex-col gap-8">
+      <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="grid gap-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-zinc-600">
+                แหล่งข้อมูล
+              </span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setDataSource("local")}
+                  className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                    dataSource === "local"
+                      ? "border-zinc-900 bg-zinc-900 text-white"
+                      : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                  }`}
+                >
+                  intern.json (ออฟไลน์)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDataSource("api")}
+                  className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                    dataSource === "api"
+                      ? "border-zinc-900 bg-zinc-900 text-white"
+                      : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                  }`}
+                >
+                  API (ต้องใช้ cookie)
+                </button>
+              </div>
+            </div>
+
+            {dataSource === "api" && (
+              <div className="flex flex-col gap-2">
+                <span className="text-xs text-zinc-500">
+                  Cookie จะถูกใช้แค่ครั้งนี้และไม่ถูกบันทึกไว้
+                </span>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  <input
+                    value={cookieValue}
+                    onChange={(event) => setCookieValue(event.target.value)}
+                    placeholder="กรอก cookie จากเบราว์เซอร์"
+                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[320px]"
+                  />
+                  <button
+                    type="button"
+                    onClick={loadRemoteJobs}
+                    disabled={isLoading}
+                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                      isLoading
+                        ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
+                        : "bg-zinc-900 text-white hover:bg-zinc-800"
+                    }`}
+                  >
+                    {isLoading ? "กำลังโหลด..." : "โหลดข้อมูล"}
+                  </button>
+                </div>
+                {loadError && (
+                  <span className="text-xs text-rose-600">{loadError}</span>
+                )}
+                {lastUpdated && (
+                  <span className="text-xs text-zinc-500">
+                    อัปเดตล่าสุด:{" "}
+                    {new Date(lastUpdated).toLocaleString("th-TH")}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-2 md:items-end">
           <label className="flex flex-col gap-2">
@@ -169,7 +323,7 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
               className="rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
             >
               <option value="">ทุกแท็ก</option>
-              {allTags.map((tag) => (
+              {activeTags.map((tag) => (
                 <option key={tag} value={tag}>
                   {tag}
                 </option>
@@ -269,7 +423,7 @@ const JobBoard = ({ jobs, allTags }: JobBoardProps) => {
       <div className="flex flex-col gap-4">
         <p className="text-sm text-zinc-600">
           พบ {displayJobs.length.toLocaleString("th-TH")} ตำแหน่งจากทั้งหมด{" "}
-          {jobs.length.toLocaleString("th-TH")} ตำแหน่ง
+          {activeJobs.length.toLocaleString("th-TH")} ตำแหน่ง
         </p>
 
         {displayJobs.length === 0 ? (

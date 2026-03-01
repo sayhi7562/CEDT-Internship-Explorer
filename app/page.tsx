@@ -16,15 +16,22 @@ export default function Home() {
             เว็บไซต์ดูข้อมูลการฝึกงาน
           </h1>
           <p className="max-w-2xl text-sm text-zinc-600 sm:text-base">
-            ระบบเรียงค่าตอบแทนจากมากไปน้อย หากเป็นต่อวัน จะถูกแปลงเป็นต่อเดือน
+            ระบบมีเรียงค่าตอบแทนจากมากไปน้อย หากเป็นต่อวัน จะถูกแปลงเป็นต่อเดือน
             (×20 วัน) เพื่อให้เปรียบเทียบได้ง่าย
             และตัดตำแหน่งที่ไม่เปิดรับออกไปแล้ว
+            และสามารถดึงข้อมูลจากเว็บโดยตรงได้ ผ่านการใช้ cookie
           </p>
+          <a
+            className="max-w-2xl text-sm text-blue-600 hover:text-blue-700 sm:text-base"
+            href="/howtogetcookie.png"
+          >
+            How to get cookie
+          </a>
           <p className="max-w-xl text-sm text-zinc-600 sm:text-base">
-            อัปเดตข้อมูลล่าสุด 26/02/2026 10.47
+            อัปเดตข้อมูลล่าสุด 01/03/2026 16.05
           </p>
         </header>
-        <JobBoard jobs={jobs} allTags={allTags} />
+        <JobBoard initialJobs={jobs} initialTags={allTags} />
       </main>
     </div>
   );
