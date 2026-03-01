@@ -22,7 +22,7 @@ const WORKING_CONDITION_OPTIONS: {
   { label: "On-site", value: "On-Site" },
   { label: "Online", value: "Online" },
   { label: "Hybrid", value: "Hybrid" },
-  { label: "Unspecified", value: "Unspecified" },
+  { label: "Other", value: "Unspecified" },
 ];
 
 function formatCurrency(value: number): string {
@@ -43,7 +43,7 @@ function buildFilterableJobs(
   selectedWorkingConditions: WorkingConditionCategory[],
   searchQuery: string,
   sortOrder: "asc" | "desc",
-  sortMode: "compensation" | "title",
+  sortMode: "compensation" | "title" | "popularity",
 ): Job[] {
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const hasQuery = trimmedQuery.length > 0;
@@ -72,7 +72,24 @@ function buildFilterableJobs(
   });
 
   if (sortMode === "title") {
-    return filtered.sort((a, b) => a.title.localeCompare(b.title, "th-TH"));
+    return filtered.sort((a, b) =>
+      sortOrder === "desc"
+        ? b.title.localeCompare(a.title, "th-TH")
+        : a.title.localeCompare(b.title, "th-TH"),
+    );
+  }
+
+  if (sortMode === "popularity") {
+    return filtered.sort((a, b) => {
+      const aCount = a.inStudentDraftCount ?? 0;
+      const bCount = b.inStudentDraftCount ?? 0;
+
+      if (aCount === bCount) {
+        return a.title.localeCompare(b.title, "th-TH");
+      }
+
+      return sortOrder === "desc" ? bCount - aCount : aCount - bCount;
+    });
   }
 
   const sorted = filtered.sort((a, b) => {
@@ -120,9 +137,9 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
   >([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [sortMode, setSortMode] = useState<"compensation" | "title">(
-    "compensation",
-  );
+  const [sortMode, setSortMode] = useState<
+    "compensation" | "title" | "popularity"
+  >("compensation");
 
   const activeJobs = dataSource === "local" ? initialJobs : (remoteJobs ?? []);
   const activeTags = useMemo(() => {
@@ -358,11 +375,11 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 md:col-span-2">
+          <div className="flex flex-col gap-3 md:col-span-2">
             <span className="text-sm font-medium text-zinc-600">
               รูปแบบการจัดเรียง
             </span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setSortMode("compensation")}
@@ -372,7 +389,18 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
                     : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
                 }`}
               >
-                ตามค่าตอบแทน
+                ค่าตอบแทน
+              </button>
+              <button
+                type="button"
+                onClick={() => setSortMode("popularity")}
+                className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                  sortMode === "popularity"
+                    ? "border-zinc-900 bg-zinc-900 text-white"
+                    : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                }`}
+              >
+                จำนวนคนเลือก
               </button>
               <button
                 type="button"
@@ -383,37 +411,39 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
                     : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
                 }`}
               >
-                ตามชื่อตำแหน่ง (A→Z)
+                ตามชื่อตำแหน่ง
               </button>
             </div>
-          </div>
-
-          <div className="flex flex-col gap-2 md:col-span-2">
-            <span className="text-sm font-medium text-zinc-600">
-              การจัดเรียงค่าตอบแทน
-            </span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setSortOrder("desc")}
                 className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                  sortOrder === "desc" && sortMode === "compensation"
+                  sortOrder === "desc"
                     ? "border-zinc-900 bg-zinc-900 text-white"
                     : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
                 }`}
               >
-                สูงไปต่ำ (ต่อเดือน)
+                {sortMode === "title"
+                  ? "Z → A"
+                  : sortMode === "popularity"
+                    ? "มีคนเลือกจากมากไปน้อย"
+                    : "สูงไปต่ำ (ต่อเดือน)"}
               </button>
               <button
                 type="button"
                 onClick={() => setSortOrder("asc")}
                 className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                  sortOrder === "asc" && sortMode === "compensation"
+                  sortOrder === "asc"
                     ? "border-zinc-900 bg-zinc-900 text-white"
                     : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
                 }`}
               >
-                ต่ำไปสูง (ต่อเดือน)
+                {sortMode === "title"
+                  ? "A → Z"
+                  : sortMode === "popularity"
+                    ? "มีคนเลือกจากน้อยไปมาก"
+                    : "ต่ำไปสูง (ต่อเดือน)"}
               </button>
             </div>
           </div>
@@ -472,6 +502,13 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
                           </span>
                         </>
                       )}
+                      <span>•</span>
+                      <span>
+                        มีคนเลือก{" "}
+                        {job.inStudentDraftCount?.toLocaleString("th-TH") ??
+                          "0"}{" "}
+                        คน
+                      </span>
                     </div>
                   </div>
 
