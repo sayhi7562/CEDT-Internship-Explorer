@@ -172,6 +172,17 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
     ],
   );
 
+  const totalQuota = useMemo(
+    () => activeJobs.reduce((sum, job) => sum + (job.quota ?? 0), 0),
+    [activeJobs],
+  );
+
+  const totalSelected = useMemo(
+    () =>
+      activeJobs.reduce((sum, job) => sum + (job.inStudentDraftCount ?? 0), 0),
+    [activeJobs],
+  );
+
   useEffect(() => {
     setLoadError(null);
     if (dataSource === "local") {
@@ -447,6 +458,25 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            Quota รวม (รับกี่คน)
+          </p>
+          <p className="mt-2 text-2xl font-semibold text-zinc-900">
+            {totalQuota.toLocaleString("th-TH")} คน
+          </p>
+        </div>
+        <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+            คนเลือกแล้ว (inStudentDraftCount)
+          </p>
+          <p className="mt-2 text-2xl font-semibold text-zinc-900">
+            {totalSelected.toLocaleString("th-TH")} คน
+          </p>
         </div>
       </div>
 
