@@ -28,7 +28,7 @@ export default function Home() {
             How to get cookie
           </a>
           <p className="max-w-xl text-sm text-zinc-600 sm:text-base">
-            อัปเดตข้อมูลล่าสุด 01/03/2026 16.05
+            อัปเดตข้อมูลล่าสุด 07/03/2026 13.30
           </p>
         </header>
         <JobBoard initialJobs={jobs} initialTags={allTags} />
