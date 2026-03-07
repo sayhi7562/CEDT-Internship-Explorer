@@ -20,6 +20,7 @@ export type JobListing = {
   compensationTypeLabel: string | null;
   quota: number | null;
   inStudentDraftCount: number | null;
+  isBookmarked: boolean;
 };
 
 export type JobDetail = JobListing & {
@@ -76,6 +77,7 @@ type RawInternItem = {
   isPublished?: boolean;
   isAcceptingApplication?: boolean;
   inStudentDraftCount?: number | null;
+  isBookmarked?: boolean | null;
 };
 
 export type RawInternDataset = {
@@ -212,6 +214,7 @@ export function transformRawItems(items: RawInternItem[]): JobDetail[] {
         item.compensationType?.compensationType,
       ),
       inStudentDraftCount: item.inStudentDraftCount ?? null,
+      isBookmarked: Boolean(item.isBookmarked),
       descriptionHtml: rawDescription,
       officeName: cleanupString(item.officeName),
       officeAddressLine1: cleanupMultiline(item.officeAddressLine1),
@@ -249,6 +252,7 @@ export function buildJobListings(details: JobDetail[]): JobListing[] {
     compensationTypeLabel: job.compensationTypeLabel,
     quota: job.quota,
     inStudentDraftCount: job.inStudentDraftCount,
+    isBookmarked: job.isBookmarked,
   }));
 }
 

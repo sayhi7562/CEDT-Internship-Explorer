@@ -42,6 +42,7 @@ function buildFilterableJobs(
   selectedTag: string,
   selectedWorkingConditions: WorkingConditionCategory[],
   searchQuery: string,
+  onlyBookmarked: boolean,
   sortOrder: "asc" | "desc",
   sortMode: "compensation" | "title" | "popularity",
 ): Job[] {
@@ -52,6 +53,9 @@ function buildFilterableJobs(
 
   const filtered = jobs.filter((job) => {
     if (job.quota === 0) {
+      return false;
+    }
+    if (onlyBookmarked && !job.isBookmarked) {
       return false;
     }
     const matchesTag = hasTag
@@ -136,6 +140,7 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
     WorkingConditionCategory[]
   >([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [onlyBookmarked, setOnlyBookmarked] = useState(false);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [sortMode, setSortMode] = useState<
     "compensation" | "title" | "popularity"
@@ -159,6 +164,7 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
         selectedTag,
         selectedWorkingConditions,
         searchQuery,
+        onlyBookmarked,
         sortOrder,
         sortMode,
       ),
@@ -167,6 +173,7 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
       selectedTag,
       selectedWorkingConditions,
       searchQuery,
+      onlyBookmarked,
       sortOrder,
       sortMode,
     ],
@@ -359,6 +366,16 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
             </select>
           </label>
 
+          <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700 md:col-span-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-yellow-400"
+              checked={onlyBookmarked}
+              onChange={(event) => setOnlyBookmarked(event.target.checked)}
+            />
+            แสดงเฉพาะตำแหน่งที่กด Bookmark
+          </label>
+
           <div className="flex flex-col gap-3 md:col-span-2">
             <span className="text-sm font-medium text-zinc-600">
               รูปแบบการทำงาน
@@ -472,10 +489,11 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
         </div>
         <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            คนเลือกแล้ว (inStudentDraftCount)
+            จำนวนคนใน pool รอบนี้ (นับจาก inStudentDraftCount รวมกันแล้วหารด้วย
+            5)
           </p>
           <p className="mt-2 text-2xl font-semibold text-zinc-900">
-            {totalSelected.toLocaleString("th-TH")} คน
+            {totalSelected / 5} คน
           </p>
         </div>
       </div>
@@ -514,12 +532,35 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
                         </span>
                       )}
                     </div>
-                    <Link
-                      href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/5`}
-                      className="text-xl font-semibold text-zinc-900 transition-colors hover:text-zinc-700"
-                    >
-                      {job.title}
-                    </Link>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/5`}
+                        className="text-xl font-semibold text-zinc-900 transition-colors hover:text-zinc-700"
+                      >
+                        {job.title}
+                      </Link>
+                      <span
+                        className="inline-flex items-center"
+                        aria-label={
+                          job.isBookmarked ? "Bookmarked" : "Not bookmarked"
+                        }
+                        title={
+                          job.isBookmarked ? "Bookmarked" : "Not bookmarked"
+                        }
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill={job.isBookmarked ? "#facc15" : "#ffffff"}
+                          stroke={job.isBookmarked ? "#facc15" : "#d1d5db"}
+                          strokeWidth="1.5"
+                          aria-hidden="true"
+                        >
+                          <path d="M12 3.5l2.9 5.88 6.5.95-4.7 4.58 1.1 6.47L12 18.7l-5.8 3.08 1.1-6.47-4.7-4.58 6.5-.95L12 3.5z" />
+                        </svg>
+                      </span>
+                    </div>
                     <div className="flex flex-wrap gap-2 text-sm text-zinc-600">
                       {job.location && <span>{job.location}</span>}
                       <span>•</span>
