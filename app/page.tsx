@@ -17,12 +17,20 @@ export default function Home() {
             และตัดตำแหน่งที่ไม่เปิดรับออกไปแล้ว
             และสามารถดึงข้อมูลจากเว็บโดยตรงได้ ผ่านการใช้ cookie
           </p>
-          <a
-            className="max-w-2xl text-sm text-blue-600 hover:text-blue-700 sm:text-base"
-            href="/howtogetcookie.png"
-          >
-            How to get cookie
-          </a>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <a
+              className="text-sm text-blue-600 hover:text-blue-700 sm:text-base"
+              href="/howtogetcookie.png"
+            >
+              How to get cookie
+            </a>
+            <a
+              className="text-sm text-blue-600 hover:text-blue-700 sm:text-base"
+              href="https://github.com/sayhi7562/CEDT-Internship-Explorer"
+            >
+              Github Repo link
+            </a>
+          </div>
         </header>
         <JobBoard />
       </main>
