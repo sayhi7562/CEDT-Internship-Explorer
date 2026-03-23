@@ -1,6 +1,8 @@
-# CEDT Internship Explorer
+# CEDT Internship Explorer Website!
 
 Built by sayhi7562 and GPT-5.
+
+Website : [cedt-intern.sayhi7562.com](cedt-intern.sayhi7562.com)
 
 ## Overview
 The internship site is hard to scan and sort, so this project presents the same data with a cleaner, faster UI. It supports filters, sorting, and a more readable job layout.
