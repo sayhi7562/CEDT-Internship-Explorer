@@ -8,11 +8,6 @@ import type { JobListing } from "@/app/lib/jobs";
 
 type Job = JobListing;
 
-type JobBoardProps = {
-  initialJobs: Job[];
-  initialTags: string[];
-};
-
 type WorkingConditionCategory = JobListing["workingConditionCategory"];
 
 const WORKING_CONDITION_OPTIONS: {
@@ -127,8 +122,7 @@ function buildFilterableJobs(
   return sorted;
 }
 
-const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
-  const [dataSource, setDataSource] = useState<"local" | "api">("local");
+const JobBoard = () => {
   const [cookieValue, setCookieValue] = useState<string>("");
   const [remoteJobs, setRemoteJobs] = useState<Job[] | null>(null);
   const [remoteTags, setRemoteTags] = useState<string[] | null>(null);
@@ -146,16 +140,13 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
     "compensation" | "title" | "popularity"
   >("compensation");
 
-  const activeJobs = dataSource === "local" ? initialJobs : (remoteJobs ?? []);
+  const activeJobs = remoteJobs ?? [];
   const activeTags = useMemo(() => {
-    if (dataSource === "local") {
-      return initialTags;
-    }
     if (remoteTags) {
       return remoteTags;
     }
     return collectTagsFromJobs(activeJobs);
-  }, [activeJobs, dataSource, initialTags, remoteTags]);
+  }, [activeJobs, remoteTags]);
 
   const displayJobs = useMemo(
     () =>
@@ -192,10 +183,7 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
 
   useEffect(() => {
     setLoadError(null);
-    if (dataSource === "local") {
-      setCookieValue("");
-    }
-  }, [dataSource]);
+  }, []);
 
   useEffect(() => {
     if (
@@ -264,76 +252,45 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
   return (
     <section className="flex flex-col gap-8">
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <div className="grid gap-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-zinc-600">
-                แหล่งข้อมูล
-              </span>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setDataSource("local")}
-                  className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                    dataSource === "local"
-                      ? "border-zinc-900 bg-zinc-900 text-white"
-                      : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
-                  }`}
-                >
-                  intern.json (ออฟไลน์)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDataSource("api")}
-                  className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                    dataSource === "api"
-                      ? "border-zinc-900 bg-zinc-900 text-white"
-                      : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
-                  }`}
-                >
-                  API (ต้องใช้ cookie)
-                </button>
-              </div>
-            </div>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-zinc-600">
+              โหลดข้อมูลจาก API
+            </span>
+            <span className="text-xs text-zinc-500">
+              Cookie จะถูกใช้แค่ครั้งนี้และไม่ถูกบันทึกไว้
+            </span>
+          </div>
 
-            {dataSource === "api" && (
-              <div className="flex flex-col gap-2">
-                <span className="text-xs text-zinc-500">
-                  Cookie จะถูกใช้แค่ครั้งนี้และไม่ถูกบันทึกไว้
-                </span>
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                  <input
-                    value={cookieValue}
-                    onChange={(event) => setCookieValue(event.target.value)}
-                    placeholder="กรอก cookie จากเบราว์เซอร์"
-                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[320px]"
-                  />
-                  <button
-                    type="button"
-                    onClick={loadRemoteJobs}
-                    disabled={isLoading}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                      isLoading
-                        ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
-                        : "bg-zinc-900 text-white hover:bg-zinc-800"
-                    }`}
-                  >
-                    {isLoading ? "กำลังโหลด..." : "โหลดข้อมูล"}
-                  </button>
-                </div>
-                {loadError && (
-                  <span className="text-xs text-rose-600">{loadError}</span>
-                )}
-                {lastUpdated && (
-                  <span className="text-xs text-zinc-500">
-                    อัปเดตล่าสุด:{" "}
-                    {new Date(lastUpdated).toLocaleString("th-TH")}
-                  </span>
-                )}
-              </div>
-            )}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              value={cookieValue}
+              onChange={(event) => setCookieValue(event.target.value)}
+              placeholder="กรอก cookie จากเบราว์เซอร์"
+              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[320px]"
+            />
+            <button
+              type="button"
+              onClick={loadRemoteJobs}
+              disabled={isLoading}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                isLoading
+                  ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
+                  : "bg-zinc-900 text-white hover:bg-zinc-800"
+              }`}
+            >
+              {isLoading ? "กำลังโหลด..." : "โหลดข้อมูล"}
+            </button>
           </div>
         </div>
+        {loadError && (
+          <span className="mt-3 block text-xs text-rose-600">{loadError}</span>
+        )}
+        {lastUpdated && (
+          <span className="mt-2 block text-xs text-zinc-500">
+            อัปเดตล่าสุด: {new Date(lastUpdated).toLocaleString("th-TH")}
+          </span>
+        )}
       </div>
 
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
@@ -506,12 +463,25 @@ const JobBoard = ({ initialJobs, initialTags }: JobBoardProps) => {
 
         {displayJobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white px-6 py-16 text-center">
-            <p className="text-sm font-medium text-zinc-600">
-              ไม่พบตำแหน่งที่ตรงกับเงื่อนไขที่เลือก
-            </p>
-            <p className="mt-2 text-xs text-zinc-500">
-              ลองปรับตัวกรองหรือค้นหาด้วยคำอื่น
-            </p>
+            {activeJobs.length === 0 ? (
+              <>
+                <p className="text-sm font-medium text-zinc-600">
+                  ยังไม่มีข้อมูลตำแหน่งงาน
+                </p>
+                <p className="mt-2 text-xs text-zinc-500">
+                  กรุณาใส่ cookie แล้วกดโหลดข้อมูลจาก API
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-medium text-zinc-600">
+                  ไม่พบตำแหน่งที่ตรงกับเงื่อนไขที่เลือก
+                </p>
+                <p className="mt-2 text-xs text-zinc-500">
+                  ลองปรับตัวกรองหรือค้นหาด้วยคำอื่น
+                </p>
+              </>
+            )}
           </div>
         ) : (
           <ul className="flex flex-col gap-6">

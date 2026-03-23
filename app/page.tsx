@@ -1,8 +1,4 @@
 import JobBoard from "./components/JobBoard";
-import { getAllTags, getJobListings } from "@/app/lib/jobs";
-
-const jobs = getJobListings();
-const allTags = getAllTags();
 
 export default function Home() {
   return (
@@ -27,11 +23,8 @@ export default function Home() {
           >
             How to get cookie
           </a>
-          <p className="max-w-xl text-sm text-zinc-600 sm:text-base">
-            อัปเดตข้อมูลล่าสุด 07/03/2026 13.30
-          </p>
         </header>
-        <JobBoard initialJobs={jobs} initialTags={allTags} />
+        <JobBoard />
       </main>
     </div>
   );
