@@ -7,15 +7,30 @@ import {
   type RawInternDataset,
 } from "@/app/lib/intern-transform";
 
-const INTERN_API_URL =
-  "https://cedtintern.cp.eng.chula.ac.th/api/sessions/5/openings?search=&page=1&limit=2000&onlyBookmarked=false&onlyAvailablePositions=true";
+function buildInternApiUrl(sessionId: number): string {
+  return `https://cedtintern.cp.eng.chula.ac.th/api/sessions/${sessionId}/openings?search=&page=1&limit=2000&onlyBookmarked=false&onlyAvailablePositions=true`;
+}
 
 export async function POST(request: Request) {
   let cookie = "";
+  let sessionId = 5;
 
   try {
-    const body = (await request.json()) as { cookie?: string };
+    const body = (await request.json()) as {
+      cookie?: string;
+      sessionId?: number | string;
+    };
     cookie = body.cookie?.trim() ?? "";
+    if (body.sessionId !== undefined && body.sessionId !== null) {
+      const parsed = Number(body.sessionId);
+      if (!Number.isInteger(parsed) || parsed <= 0) {
+        return NextResponse.json(
+          { error: "รหัส Pool (sessionId) ไม่ถูกต้อง" },
+          { status: 400 },
+        );
+      }
+      sessionId = parsed;
+    }
   } catch {
     return NextResponse.json(
       { error: "รูปแบบข้อมูลไม่ถูกต้อง" },
@@ -28,7 +43,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const response = await fetch(INTERN_API_URL, {
+    const response = await fetch(buildInternApiUrl(sessionId), {
       method: "GET",
       headers: {
         accept: "application/json, text/plain, */*",

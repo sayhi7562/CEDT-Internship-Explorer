@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import { collectTagsFromJobs } from "@/app/lib/intern-transform";
+import {
+  collectTagsFromJobs,
+  type InternSession,
+  type InternSessionRound,
+} from "@/app/lib/intern-transform";
 import type { JobListing } from "@/app/lib/jobs";
 
 type Job = JobListing;
@@ -30,6 +34,34 @@ function formatMonthlyCompensation(value: number | null): string {
   }
 
   return `${formatCurrency(Math.round(value))} บาท/เดือน`;
+}
+
+function formatSessionLabel(session: InternSession): string {
+  return `${session.title} ${session.sessionGroupTitle}`.trim();
+}
+
+function formatDateTimeUtc7(isoString: string | null | undefined): string {
+  if (!isoString) {
+    return "ไม่มี / ไม่ระบุ";
+  }
+
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) {
+    return "ไม่ระบุ";
+  }
+
+  const formatted = new Intl.DateTimeFormat("th-TH", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date);
+
+  return `${formatted} น. (UTC+7)`;
 }
 
 function buildFilterableJobs(
@@ -124,6 +156,15 @@ function buildFilterableJobs(
 
 const JobBoard = () => {
   const [cookieValue, setCookieValue] = useState<string>("");
+  const [sessions, setSessions] = useState<InternSession[]>([]);
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
+    null,
+  );
+  const [loadedSessionId, setLoadedSessionId] = useState<number | null>(null);
+  const [selectedRoundNumber, setSelectedRoundNumber] = useState<number | null>(
+    null,
+  );
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   const [remoteJobs, setRemoteJobs] = useState<Job[] | null>(null);
   const [remoteTags, setRemoteTags] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -140,7 +181,54 @@ const JobBoard = () => {
     "compensation" | "title" | "popularity"
   >("compensation");
 
-  const activeJobs = remoteJobs ?? [];
+  const selectedSession = useMemo(
+    () =>
+      sessions.find((session) => session.sessionId === selectedSessionId) ??
+      null,
+    [sessions, selectedSessionId],
+  );
+
+  const activeLoadedSession = useMemo(
+    () =>
+      sessions.find(
+        (session) =>
+          session.sessionId === (loadedSessionId ?? selectedSessionId),
+      ) ?? selectedSession,
+    [sessions, loadedSessionId, selectedSessionId, selectedSession],
+  );
+
+  const displayedRound: InternSessionRound | null = useMemo(() => {
+    if (!selectedSession) {
+      return null;
+    }
+    const targetRound = selectedRoundNumber ?? selectedSession.currentRound;
+    const found = selectedSession.rounds?.find(
+      (item) => item.round === targetRound,
+    );
+    if (found) {
+      return found;
+    }
+    return {
+      round: selectedSession.currentRound,
+      openingSubmissionDeadline: selectedSession.openingSubmissionDeadline,
+      openingAnnouncementDate: selectedSession.openingAnnouncementDate,
+      studentRankingDeadline: selectedSession.studentRankingDeadline,
+      applicationAnnouncementDate: selectedSession.applicationAnnouncementDate,
+      companyRankingDeadline: selectedSession.companyRankingDeadline,
+      resultAnnouncementDate: selectedSession.resultAnnouncementDate,
+      reorderRankingDeadline: selectedSession.reorderRankingDeadline,
+      cancelRankingDeadline: selectedSession.cancelRankingDeadline,
+    };
+  }, [selectedSession, selectedRoundNumber]);
+
+  const maxApplicationsPerStudent = useMemo(() => {
+    const count = activeLoadedSession?.maximumApplicationPerStudent;
+    return count && count > 0 ? count : 5;
+  }, [activeLoadedSession]);
+
+  const activeSessionIdForLinks = loadedSessionId ?? selectedSessionId ?? 5;
+
+  const activeJobs = useMemo(() => remoteJobs ?? [], [remoteJobs]);
   const activeTags = useMemo(() => {
     if (remoteTags) {
       return remoteTags;
@@ -186,6 +274,14 @@ const JobBoard = () => {
   }, []);
 
   useEffect(() => {
+    if (selectedSession) {
+      setSelectedRoundNumber(selectedSession.currentRound);
+    } else {
+      setSelectedRoundNumber(null);
+    }
+  }, [selectedSession]);
+
+  useEffect(() => {
     if (
       selectedTag &&
       !activeTags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
@@ -194,10 +290,73 @@ const JobBoard = () => {
     }
   }, [activeTags, selectedTag]);
 
+  const loadSessions = async () => {
+    const trimmedCookie = cookieValue.trim();
+    if (!trimmedCookie) {
+      setLoadError("กรุณากรอก cookie ก่อนดึงรายการ Pool");
+      return;
+    }
+
+    setIsLoadingSessions(true);
+    setLoadError(null);
+
+    try {
+      const response = await fetch("/api/sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cookie: trimmedCookie }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(
+          payload?.error ??
+            `ดึงรายการ Pool ไม่สำเร็จ (HTTP ${response.status})`,
+        );
+      }
+
+      const payload = (await response.json()) as {
+        sessions: InternSession[];
+      };
+
+      const fetchedSessions = payload.sessions ?? [];
+      setSessions(fetchedSessions);
+
+      if (fetchedSessions.length === 0) {
+        setSelectedSessionId(null);
+        setLoadError("ไม่พบรายการ Pool จากระบบ");
+        return;
+      }
+
+      const stillExists = fetchedSessions.some(
+        (item) => item.sessionId === selectedSessionId,
+      );
+      if (!stillExists) {
+        const latestSession = fetchedSessions[fetchedSessions.length - 1];
+        setSelectedSessionId(latestSession.sessionId);
+      }
+    } catch (error) {
+      setLoadError(
+        error instanceof Error ? error.message : "ดึงรายการ Pool ไม่สำเร็จ",
+      );
+    } finally {
+      setIsLoadingSessions(false);
+    }
+  };
+
   const loadRemoteJobs = async () => {
     const trimmedCookie = cookieValue.trim();
     if (!trimmedCookie) {
       setLoadError("กรุณากรอก cookie ก่อนโหลดข้อมูล");
+      return;
+    }
+
+    if (selectedSessionId == null) {
+      setLoadError("กรุณาเลือก Pool ก่อนโหลดข้อมูลตำแหน่งงาน");
       return;
     }
 
@@ -210,7 +369,10 @@ const JobBoard = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cookie: trimmedCookie }),
+        body: JSON.stringify({
+          cookie: trimmedCookie,
+          sessionId: selectedSessionId,
+        }),
       });
 
       if (!response.ok) {
@@ -230,6 +392,7 @@ const JobBoard = () => {
 
       setRemoteJobs(payload.jobs ?? []);
       setRemoteTags(payload.allTags ?? []);
+      setLoadedSessionId(selectedSessionId);
       setLastUpdated(payload.fetchedAt ?? null);
     } catch (error) {
       setLoadError(
@@ -252,46 +415,299 @@ const JobBoard = () => {
   return (
     <section className="flex flex-col gap-8">
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-zinc-600">
-              โหลดข้อมูลจาก API
-            </span>
-            <span className="text-xs text-zinc-500">
-              Cookie จะถูกใช้แค่ครั้งนี้และไม่ถูกบันทึกไว้
-            </span>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-zinc-600">
+                1. กรอก Cookie เพื่อดึงรายการ Pool
+              </span>
+              <span className="text-xs text-zinc-500">
+                Cookie จะถูกใช้แค่ครั้งนี้และไม่ถูกบันทึกไว้
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <input
+                value={cookieValue}
+                onChange={(event) => setCookieValue(event.target.value)}
+                placeholder="กรอก cookie จากเบราว์เซอร์"
+                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[320px]"
+              />
+              <button
+                type="button"
+                onClick={loadSessions}
+                disabled={isLoadingSessions || isLoading}
+                className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                  isLoadingSessions || isLoading
+                    ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
+                    : "bg-zinc-900 text-white hover:bg-zinc-800"
+                }`}
+              >
+                {isLoadingSessions ? "กำลังดึง Pool..." : "ดึงรายการ Pool"}
+              </button>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <input
-              value={cookieValue}
-              onChange={(event) => setCookieValue(event.target.value)}
-              placeholder="กรอก cookie จากเบราว์เซอร์"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[320px]"
-            />
-            <button
-              type="button"
-              onClick={loadRemoteJobs}
-              disabled={isLoading}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                isLoading
-                  ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
-                  : "bg-zinc-900 text-white hover:bg-zinc-800"
-              }`}
-            >
-              {isLoading ? "กำลังโหลด..." : "โหลดข้อมูล"}
-            </button>
-          </div>
+          {sessions.length > 0 && (
+            <div className="flex flex-col gap-3 border-t border-zinc-100 pt-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-medium text-zinc-600">
+                  2. เลือก Pool ที่ต้องการดูข้อมูล
+                </span>
+                <span className="text-xs text-zinc-500">
+                  เลือก Pool แล้วกดโหลดข้อมูลตำแหน่งงาน
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <select
+                  aria-label="เลือก Pool"
+                  value={selectedSessionId ?? ""}
+                  onChange={(event) =>
+                    setSelectedSessionId(Number(event.target.value))
+                  }
+                  className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[240px]"
+                >
+                  {sessions.map((session) => (
+                    <option key={session.sessionId} value={session.sessionId}>
+                      {formatSessionLabel(session)}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={loadRemoteJobs}
+                  disabled={isLoading || isLoadingSessions || selectedSessionId == null}
+                  className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    isLoading || isLoadingSessions || selectedSessionId == null
+                      ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
+                      : "bg-zinc-900 text-white hover:bg-zinc-800"
+                  }`}
+                >
+                  {isLoading ? "กำลังโหลดข้อมูล..." : "โหลดข้อมูลตำแหน่งงาน"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
+
         {loadError && (
           <span className="mt-3 block text-xs text-rose-600">{loadError}</span>
         )}
         {lastUpdated && (
           <span className="mt-2 block text-xs text-zinc-500">
-            อัปเดตล่าสุด: {new Date(lastUpdated).toLocaleString("th-TH")}
+            อัปเดตข้อมูลตำแหน่งงานล่าสุด:{" "}
+            {new Date(lastUpdated).toLocaleString("th-TH", {
+              timeZone: "Asia/Bangkok",
+            })}{" "}
+            (Pool:{" "}
+            {activeLoadedSession
+              ? formatSessionLabel(activeLoadedSession)
+              : `Session ${activeSessionIdForLinks}`}
+            )
           </span>
         )}
       </div>
+
+      {selectedSession && (
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-lg font-semibold text-zinc-900">
+                    ข้อมูล Pool: {formatSessionLabel(selectedSession)}
+                  </h2>
+                  <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600">
+                    sessionId: {selectedSession.sessionId}
+                  </span>
+                </div>
+                {selectedSession.description && (
+                  <p className="mt-1 text-sm text-zinc-600">
+                    {selectedSession.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <span className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700">
+                  รอบปัจจุบัน: รอบที่ {selectedSession.currentRound}
+                </span>
+                <span
+                  className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                    selectedSession.openForCooperativeInternship
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-zinc-200 bg-zinc-50 text-zinc-600"
+                  }`}
+                >
+                  สหกิจศึกษา:{" "}
+                  {selectedSession.openForCooperativeInternship
+                    ? "เปิดรับ"
+                    : "ไม่เปิดรับ"}
+                </span>
+                <span
+                  className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                    selectedSession.isMatchingInitiated
+                      ? "border-blue-200 bg-blue-50 text-blue-700"
+                      : "border-amber-200 bg-amber-50 text-amber-700"
+                  }`}
+                >
+                  สถานะการจับคู่:{" "}
+                  {selectedSession.isMatchingInitiated
+                    ? "เริ่มการจับคู่แล้ว"
+                    : "ยังไม่เริ่มการจับคู่"}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid gap-3 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-sm text-zinc-700 sm:grid-cols-3">
+              <div>
+                <span className="block text-xs text-zinc-500">
+                  จำนวนการสมัครขั้นต่ำต่อนิสิต
+                </span>
+                <span className="font-semibold text-zinc-900">
+                  {selectedSession.minimumApplicationPerStudent} อันดับ
+                </span>
+              </div>
+              <div>
+                <span className="block text-xs text-zinc-500">
+                  จำนวนการสมัครสูงสุดต่อนิสิต
+                </span>
+                <span className="font-semibold text-zinc-900">
+                  {selectedSession.maximumApplicationPerStudent} อันดับ
+                </span>
+              </div>
+              <div>
+                <span className="block text-xs text-zinc-500">
+                  จำนวนบริษัทไม่ซ้ำขั้นต่ำ
+                </span>
+                <span className="font-semibold text-zinc-900">
+                  {selectedSession.minimumUniqueCompanyCountPerStudent} บริษัท
+                </span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-medium text-zinc-700">
+                  กำหนดการของ Pool (เวลาไทย UTC+7)
+                </span>
+                {selectedSession.rounds && selectedSession.rounds.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSession.rounds.map((roundItem) => {
+                      const activeRound =
+                        (selectedRoundNumber ?? selectedSession.currentRound) ===
+                        roundItem.round;
+                      return (
+                        <button
+                          key={roundItem.round}
+                          type="button"
+                          onClick={() =>
+                            setSelectedRoundNumber(roundItem.round)
+                          }
+                          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                            activeRound
+                              ? "border-zinc-900 bg-zinc-900 text-white"
+                              : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                          }`}
+                        >
+                          รอบที่ {roundItem.round}
+                          {roundItem.round === selectedSession.currentRound
+                            ? " (ปัจจุบัน)"
+                            : ""}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {displayedRound && (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันประกาศตำแหน่งงาน
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(
+                        displayedRound.openingAnnouncementDate,
+                      )}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันปิดรับส่งตำแหน่งงาน (บริษัท)
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(
+                        displayedRound.openingSubmissionDeadline,
+                      )}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันประกาศรายชื่อผู้สมัคร
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(
+                        displayedRound.applicationAnnouncementDate,
+                      )}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันปิดรับการจัดอันดับของนิสิต
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(
+                        displayedRound.studentRankingDeadline,
+                      )}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันปิดรับการปรับอันดับ (Reorder)
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(
+                        displayedRound.reorderRankingDeadline,
+                      )}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันปิดรับการยกเลิก/สละสิทธิ์
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(displayedRound.cancelRankingDeadline)}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันปิดรับการจัดอันดับของบริษัท
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(
+                        displayedRound.companyRankingDeadline,
+                      )}
+                    </span>
+                  </div>
+                  <div className="rounded-xl border border-zinc-200 p-3">
+                    <span className="block text-xs text-zinc-500">
+                      วันประกาศผลการจับคู่
+                    </span>
+                    <span className="mt-1 block text-sm font-medium text-zinc-900">
+                      {formatDateTimeUtc7(
+                        displayedRound.resultAnnouncementDate,
+                      )}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-2 md:items-end">
@@ -446,11 +862,17 @@ const JobBoard = () => {
         </div>
         <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
-            จำนวนคนใน pool รอบนี้ (นับจาก inStudentDraftCount รวมกันแล้วหารด้วย
-            5)
+            จำนวนคนใน pool รอบนี้ (นับจาก inStudentDraftCount รวมกันแล้วหารด้วย{" "}
+            {maxApplicationsPerStudent})
           </p>
           <p className="mt-2 text-2xl font-semibold text-zinc-900">
-            {totalSelected / 5} คน
+            {(totalSelected / maxApplicationsPerStudent).toLocaleString(
+              "th-TH",
+              {
+                maximumFractionDigits: 2,
+              },
+            )}{" "}
+            คน
           </p>
         </div>
       </div>
@@ -469,7 +891,7 @@ const JobBoard = () => {
                   ยังไม่มีข้อมูลตำแหน่งงาน
                 </p>
                 <p className="mt-2 text-xs text-zinc-500">
-                  กรุณาใส่ cookie แล้วกดโหลดข้อมูลจาก API
+                  กรุณาใส่ cookie กดดึงรายการ Pool แล้วเลือก Pool เพื่อโหลดข้อมูลตำแหน่งงาน
                 </p>
               </>
             ) : (
@@ -504,7 +926,7 @@ const JobBoard = () => {
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
-                        href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/5`}
+                        href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/${activeSessionIdForLinks}`}
                         className="text-xl font-semibold text-zinc-900 transition-colors hover:text-zinc-700"
                       >
                         {job.title}
@@ -591,7 +1013,7 @@ const JobBoard = () => {
 
                 <div className="mt-4">
                   <Link
-                    href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/5`}
+                    href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/${activeSessionIdForLinks}`}
                     className="text-sm font-medium text-zinc-900 transition-colors hover:text-zinc-700"
                   >
                     ดูรายละเอียดตำแหน่ง →

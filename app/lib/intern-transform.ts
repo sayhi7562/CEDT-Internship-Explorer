@@ -88,6 +88,41 @@ export type RawTagDataset = Array<{
   tagName?: string | null;
 }>;
 
+export type InternSessionRound = {
+  round: number;
+  openingSubmissionDeadline: string | null;
+  openingAnnouncementDate: string | null;
+  studentRankingDeadline: string | null;
+  applicationAnnouncementDate: string | null;
+  companyRankingDeadline: string | null;
+  resultAnnouncementDate: string | null;
+  reorderRankingDeadline: string | null;
+  cancelRankingDeadline: string | null;
+};
+
+export type InternSession = {
+  sessionId: number;
+  title: string;
+  description: string;
+  currentRound: number;
+  minimumApplicationPerStudent: number;
+  minimumUniqueCompanyCountPerStudent: number;
+  maximumApplicationPerStudent: number;
+  openForCooperativeInternship: boolean;
+  openingSubmissionDeadline: string | null;
+  openingAnnouncementDate: string | null;
+  studentRankingDeadline: string | null;
+  applicationAnnouncementDate: string | null;
+  companyRankingDeadline: string | null;
+  resultAnnouncementDate: string | null;
+  reorderRankingDeadline: string | null;
+  cancelRankingDeadline: string | null;
+  isMatchingInitiated: boolean;
+  sessionGroupId: number;
+  sessionGroupTitle: string;
+  rounds: InternSessionRound[];
+};
+
 function computeMonthlyCompensation(
   amount: number | null | undefined,
   label: string | null | undefined,
