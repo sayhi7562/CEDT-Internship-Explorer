@@ -10,12 +10,46 @@ import {
 } from "@/app/lib/intern-transform";
 import type { JobListing } from "@/app/lib/jobs";
 
+import CookieGuideModal from "./CookieGuideModal";
+import JobDetailModal, {
+  extractFirstUrl,
+  formatCurrency,
+  formatInternshipPeriod,
+  formatMonthlyCompensation,
+  getCompetitionBadge,
+  getWorkingConditionBadgeClass,
+  normalizeExternalUrl,
+  RICH_HTML_CLASSES,
+  TextWithLinks,
+} from "./JobDetailModal";
+import ShortlistPanel from "./ShortlistPanel";
+
 type Job = JobListing;
 
 type WorkingConditionCategory = JobListing["workingConditionCategory"];
 type CoopFilter = "all" | "coop" | "non-coop";
+type SortMode = "compensation" | "popularity" | "competition" | "title";
+type TagMatchMode = "any" | "all";
+
+type CachedBoardData = {
+  sessions: InternSession[];
+  selectedSessionId: number | null;
+  loadedSessionId: number | null;
+  remoteJobs: Job[] | null;
+  remoteTags: string[] | null;
+  remoteMeta: InternOpeningsMeta | null;
+  lastUpdated: string | null;
+};
+
+type CachedCookieData = {
+  rememberCookie: boolean;
+  cookieValue: string;
+};
 
 const DEFAULT_SESSION_ID = 9;
+const CACHE_STORAGE_KEY = "cedt_explorer_cache_v1";
+const COOKIE_STORAGE_KEY = "cedt_explorer_cookie_v1";
+const SHORTLIST_STORAGE_KEY = "cedt_explorer_shortlist_v1";
 
 const WORKING_CONDITION_OPTIONS: {
   label: string;
@@ -33,26 +67,25 @@ const COOP_FILTER_OPTIONS: { label: string; value: CoopFilter }[] = [
   { label: "ฝึกงานทั่วไป (ไม่สหกิจ)", value: "non-coop" },
 ];
 
-const RICH_HTML_CLASSES =
-  "text-sm leading-relaxed text-zinc-700 [&_h1]:mt-3 [&_h1]:mb-1.5 [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-zinc-900 [&_h2]:mt-3 [&_h2]:mb-1.5 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-zinc-900 [&_h3]:mt-2.5 [&_h3]:mb-1 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-900 [&_h4]:mt-2.5 [&_h4]:mb-1 [&_h4]:text-sm [&_h4]:font-semibold [&_h4]:text-zinc-900 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_li.ql-indent-1]:ml-5 [&_li.ql-indent-2]:ml-10 [&_code]:rounded [&_code]:bg-zinc-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-zinc-800 [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-700 [&_strong]:font-semibold [&_strong]:text-zinc-900";
+const COMPENSATION_PRESETS: { label: string; value: number | null }[] = [
+  { label: "ทั้งหมด", value: null },
+  { label: "มีค่าตอบแทน (> 0)", value: 1 },
+  { label: "≥ 5,000", value: 5000 },
+  { label: "≥ 8,000", value: 8000 },
+  { label: "≥ 10,000", value: 10000 },
+  { label: "≥ 15,000", value: 15000 },
+];
 
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("th-TH")}`;
-}
-
-function formatMonthlyCompensation(
-  value: number | null,
-  typeLabel: string | null,
-): string {
-  if (typeLabel === "ไม่มีค่าตอบแทน" || value === 0) {
-    return "ไม่มีค่าตอบแทน";
+function sanitizeCookieInput(raw: string): string {
+  let cleaned = raw.replace(/[\r\n\t]+/g, " ").trim();
+  cleaned = cleaned.replace(/^cookie\s*:\s*/i, "").trim();
+  if (
+    (cleaned.startsWith('"') && cleaned.endsWith('"')) ||
+    (cleaned.startsWith("'") && cleaned.endsWith("'"))
+  ) {
+    cleaned = cleaned.slice(1, -1).trim();
   }
-
-  if (value == null) {
-    return "ไม่ระบุ";
-  }
-
-  return `${formatCurrency(Math.round(value))} บาท/เดือน`;
+  return cleaned.replace(/^cookie\s*:\s*/i, "").trim();
 }
 
 function formatSessionLabel(session: InternSession): string {
@@ -83,131 +116,49 @@ function formatDateTimeUtc7(isoString: string | null | undefined): string {
   return `${formatted} น. (UTC+7)`;
 }
 
-function formatShortDateUtc7(
-  isoString: string | null | undefined,
-): string | null {
-  if (!isoString) {
-    return null;
+function formatRelativeCountdown(targetMs: number, nowMs: number): string {
+  const diffMs = targetMs - nowMs;
+  if (diffMs <= 0) {
+    return "ถึงกำหนดแล้ว";
   }
+  const totalMinutes = Math.floor(diffMs / 60_000);
+  const days = Math.floor(totalMinutes / (60 * 24));
+  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+  const minutes = totalMinutes % 60;
 
-  const date = new Date(isoString);
-  if (Number.isNaN(date.getTime())) {
-    return null;
+  if (days > 0) {
+    return `อีก ${days} วัน ${hours} ชม.`;
   }
-
-  return new Intl.DateTimeFormat("th-TH", {
-    timeZone: "Asia/Bangkok",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(date);
-}
-
-function formatInternshipPeriod(
-  startIso: string | null,
-  endIso: string | null,
-): string | null {
-  const start = formatShortDateUtc7(startIso);
-  const end = formatShortDateUtc7(endIso);
-  if (start && end) {
-    return `${start} – ${end}`;
+  if (hours > 0) {
+    return `อีก ${hours} ชม. ${minutes} นาที`;
   }
-  if (start) {
-    return `เริ่ม ${start}`;
+  if (minutes > 0) {
+    return `อีก ${minutes} นาที`;
   }
-  if (end) {
-    return `สิ้นสุด ${end}`;
-  }
-  return null;
-}
-
-function extractFirstUrl(text: string | null | undefined): string | null {
-  if (!text) {
-    return null;
-  }
-  const match = text.match(/https?:\/\/[^\s)<>]+/i);
-  if (!match) {
-    return null;
-  }
-  return match[0].replace(/[.,;]+$/, "");
-}
-
-function normalizeExternalUrl(url: string | null | undefined): string | null {
-  const trimmed = url?.trim();
-  if (!trimmed) {
-    return null;
-  }
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed;
-  }
-  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(trimmed)) {
-    return `https://${trimmed}`;
-  }
-  return null;
-}
-
-function getCompanyInitials(primary: string, secondary: string | null): string {
-  const candidate = (secondary ?? primary)
-    .replace(/^บริษัท\s+/u, "")
-    .replace(/^ธนาคาร\s*/u, "")
-    .trim();
-  if (!candidate) {
-    return "?";
-  }
-  return candidate.slice(0, 2).toUpperCase();
-}
-
-function getCompetitionBadge(
-  quota: number | null,
-  draftCount: number | null,
-): { label: string; className: string } | null {
-  if (quota == null || quota <= 0) {
-    return null;
-  }
-  const count = draftCount ?? 0;
-  if (count === 0) {
-    return {
-      label: "ยังไม่มีคนเลือก",
-      className: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    };
-  }
-  const ratio = count / quota;
-  const formattedRatio = Number.isInteger(ratio)
-    ? `${ratio}x`
-    : `${ratio.toFixed(1)}x`;
-
-  if (ratio < 1) {
-    return {
-      label: `แข่งขันต่ำ (${formattedRatio})`,
-      className: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    };
-  }
-  if (ratio < 2) {
-    return {
-      label: `แข่งขันปานกลาง (${formattedRatio})`,
-      className: "border-amber-200 bg-amber-50 text-amber-700",
-    };
-  }
-  return {
-    label: `แข่งขันสูง (${formattedRatio})`,
-    className: "border-rose-200 bg-rose-50 text-rose-700",
-  };
+  return "น้อยกว่า 1 นาที";
 }
 
 function buildFilterableJobs(
   jobs: Job[],
-  selectedTag: string,
+  selectedTags: string[],
+  tagMatchMode: TagMatchMode,
   selectedWorkingConditions: WorkingConditionCategory[],
   coopFilter: CoopFilter,
+  minCompensation: number | null,
+  hideUnspecifiedCompensation: boolean,
+  onlyLowCompetition: boolean,
+  onlyShortlisted: boolean,
+  shortlistSet: Set<number>,
   searchQuery: string,
   onlyBookmarked: boolean,
   onlyAcceptingApplication: boolean,
   sortOrder: "asc" | "desc",
-  sortMode: "compensation" | "title" | "popularity",
+  sortMode: SortMode,
 ): Job[] {
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const hasQuery = trimmedQuery.length > 0;
-  const hasTag = selectedTag.length > 0;
+  const normalizedSelectedTags = selectedTags.map((t) => t.toLowerCase());
+  const hasTags = normalizedSelectedTags.length > 0;
   const hasCondition = selectedWorkingConditions.length > 0;
 
   const filtered = jobs.filter((job) => {
@@ -220,16 +171,44 @@ function buildFilterableJobs(
     if (onlyBookmarked && !job.isBookmarked) {
       return false;
     }
+    if (onlyShortlisted && !shortlistSet.has(job.id)) {
+      return false;
+    }
     if (coopFilter === "coop" && !job.openForCooperativeInternship) {
       return false;
     }
     if (coopFilter === "non-coop" && job.openForCooperativeInternship) {
       return false;
     }
+    if (hideUnspecifiedCompensation && job.monthlyCompensation == null) {
+      return false;
+    }
+    if (
+      minCompensation != null &&
+      (job.monthlyCompensation == null ||
+        job.monthlyCompensation < minCompensation)
+    ) {
+      return false;
+    }
+    if (
+      onlyLowCompetition &&
+      !(
+        job.quota != null &&
+        job.quota > 0 &&
+        (job.inStudentDraftCount ?? 0) < job.quota
+      )
+    ) {
+      return false;
+    }
 
-    const matchesTag = hasTag
-      ? job.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
-      : true;
+    let matchesTags = true;
+    if (hasTags) {
+      const jobTagSet = new Set(job.tags.map((tag) => tag.toLowerCase()));
+      matchesTags =
+        tagMatchMode === "all"
+          ? normalizedSelectedTags.every((tag) => jobTagSet.has(tag))
+          : normalizedSelectedTags.some((tag) => jobTagSet.has(tag));
+    }
 
     const matchesCondition = hasCondition
       ? selectedWorkingConditions.includes(job.workingConditionCategory)
@@ -245,13 +224,15 @@ function buildFilterableJobs(
           job.officeAddressLine1 ?? "",
           job.officeAddressLine2 ?? "",
           job.location ?? "",
+          job.descriptionSnippet,
+          job.requirementsSnippet ?? "",
         ]
           .join(" ")
           .toLowerCase()
           .includes(trimmedQuery)
       : true;
 
-    return matchesTag && matchesCondition && matchesQuery;
+    return matchesTags && matchesCondition && matchesQuery;
   });
 
   if (sortMode === "title") {
@@ -272,6 +253,36 @@ function buildFilterableJobs(
       }
 
       return sortOrder === "desc" ? bCount - aCount : aCount - bCount;
+    });
+  }
+
+  if (sortMode === "competition") {
+    return filtered.sort((a, b) => {
+      const aHasRatio = a.quota != null && a.quota > 0;
+      const bHasRatio = b.quota != null && b.quota > 0;
+
+      if (aHasRatio && !bHasRatio) {
+        return -1;
+      }
+      if (!aHasRatio && bHasRatio) {
+        return 1;
+      }
+      if (!aHasRatio && !bHasRatio) {
+        return a.title.localeCompare(b.title, "th-TH");
+      }
+
+      const aRatio = (a.inStudentDraftCount ?? 0) / (a.quota as number);
+      const bRatio = (b.inStudentDraftCount ?? 0) / (b.quota as number);
+
+      if (Math.abs(aRatio - bRatio) < 1e-9) {
+        const quotaDiff = (b.quota ?? 0) - (a.quota ?? 0);
+        if (quotaDiff !== 0) {
+          return quotaDiff;
+        }
+        return a.title.localeCompare(b.title, "th-TH");
+      }
+
+      return sortOrder === "desc" ? bRatio - aRatio : aRatio - bRatio;
     });
   }
 
@@ -304,78 +315,22 @@ function buildFilterableJobs(
   });
 }
 
-function CompanyLogo({
-  logoUrl,
-  primaryName,
-  secondaryName,
-}: {
-  logoUrl: string | null;
-  primaryName: string;
-  secondaryName: string | null;
-}) {
-  const [failed, setFailed] = useState(false);
-
-  if (logoUrl && !failed) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={logoUrl}
-        alt={primaryName}
-        loading="lazy"
-        onError={() => setFailed(true)}
-        className="h-12 w-12 shrink-0 rounded-xl border border-zinc-200 bg-white object-contain p-1"
-      />
-    );
-  }
-
-  return (
-    <div
-      aria-hidden="true"
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-xs font-semibold text-zinc-600"
-    >
-      {getCompanyInitials(primaryName, secondaryName)}
-    </div>
-  );
-}
-
-function TextWithLinks({ text }: { text: string }) {
-  const parts = text.split(/(https?:\/\/[^\s)<>]+)/gi);
-  return (
-    <span className="whitespace-pre-line break-words">
-      {parts.map((part, index) => {
-        if (/^https?:\/\//i.test(part)) {
-          const cleanUrl = part.replace(/[.,;]+$/, "");
-          const trailing = part.slice(cleanUrl.length);
-          return (
-            <span key={`${cleanUrl}-${index}`}>
-              <a
-                href={cleanUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline hover:text-blue-700"
-              >
-                {cleanUrl}
-              </a>
-              {trailing}
-            </span>
-          );
-        }
-        return <span key={index}>{part}</span>;
-      })}
-    </span>
-  );
-}
-
 function JobCard({
   job,
   activeSessionIdForLinks,
-  selectedTag,
-  onSelectTag,
+  selectedTags,
+  shortlistRank,
+  onToggleTag,
+  onToggleShortlist,
+  onOpenModal,
 }: {
   job: Job;
   activeSessionIdForLinks: number;
-  selectedTag: string;
-  onSelectTag: (tag: string) => void;
+  selectedTags: string[];
+  shortlistRank: number | null;
+  onToggleTag: (tag: string) => void;
+  onToggleShortlist: (jobId: number) => void;
+  onOpenModal: (job: Job) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -392,6 +347,7 @@ function JobCard({
   const isUnpaid =
     job.compensationTypeLabel === "ไม่มีค่าตอบแทน" ||
     job.monthlyCompensation === 0;
+  const isPaid = !isUnpaid && job.monthlyCompensation != null;
   const isDailyCompensation =
     job.compensationTypeLabel != null &&
     (job.compensationTypeLabel.includes("วัน") ||
@@ -401,19 +357,16 @@ function JobCard({
   const hasSeparateDetailContact =
     Boolean(job.detailContact) &&
     job.detailContact !== job.recruitmentContact;
+  const isShortlisted = shortlistRank != null;
 
   return (
-    <li className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-zinc-300">
+    <li
+      className={`rounded-2xl border bg-white p-6 shadow-sm transition hover:border-zinc-300 ${
+        isShortlisted ? "border-amber-300/80" : "border-zinc-200"
+      }`}
+    >
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div className="flex min-w-0 flex-1 items-start gap-4">
-          <CompanyLogo
-            key={job.logoUrl ?? `fallback-${job.id}`}
-            logoUrl={job.logoUrl}
-            primaryName={job.companyNamePrimary}
-            secondaryName={job.companyNameSecondary}
-          />
-
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex flex-col">
               <span className="text-xs font-medium text-zinc-600">
                 {job.companyNamePrimary}
@@ -426,14 +379,13 @@ function JobCard({
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <a
-                href={openingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xl font-semibold text-zinc-900 transition-colors hover:text-blue-700"
+              <button
+                type="button"
+                onClick={() => onOpenModal(job)}
+                className="text-left text-xl font-semibold text-zinc-900 transition-colors hover:text-blue-700"
               >
                 {job.title}
-              </a>
+              </button>
 
               <span
                 className="inline-flex items-center"
@@ -478,7 +430,11 @@ function JobCard({
             </div>
 
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-zinc-600">
-              <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700">
+              <span
+                className={`rounded-md border px-2 py-0.5 text-xs font-medium ${getWorkingConditionBadgeClass(
+                  job.workingConditionCategory,
+                )}`}
+              >
                 {job.workingConditionDisplay}
               </span>
               {job.location && (
@@ -492,7 +448,7 @@ function JobCard({
                   href={mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
+                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
                 >
                   แผนที่ ↗
                 </a>
@@ -527,7 +483,6 @@ function JobCard({
                 <span className="text-zinc-500">ช่วงฝึกงาน: {periodLabel}</span>
               )}
             </div>
-          </div>
         </div>
 
         <div className="flex shrink-0 flex-col items-start md:items-end">
@@ -536,7 +491,7 @@ function JobCard({
           </span>
           <span
             className={`text-lg font-semibold ${
-              isUnpaid ? "text-zinc-600" : "text-zinc-900"
+              isPaid ? "text-emerald-700" : "text-zinc-600"
             }`}
           >
             {formatMonthlyCompensation(
@@ -563,7 +518,7 @@ function JobCard({
       )}
 
       {!isExpanded && job.requirementsSnippet && (
-        <div className="mt-3 rounded-xl border border-amber-200/80 bg-amber-50/60 px-3.5 py-2 text-xs text-amber-900">
+        <div className="mt-3 rounded-xl border border-amber-200/70 bg-amber-50/50 px-3.5 py-2 text-xs text-amber-900">
           <span className="font-semibold">เงื่อนไขเพิ่มเติม: </span>
           {job.requirementsSnippet}
         </div>
@@ -572,13 +527,14 @@ function JobCard({
       {job.tags.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
           {job.tags.map((tag) => {
-            const isActiveTag =
-              selectedTag.toLowerCase() === tag.toLowerCase();
+            const isActiveTag = selectedTags.some(
+              (selected) => selected.toLowerCase() === tag.toLowerCase(),
+            );
             return (
               <button
                 key={tag}
                 type="button"
-                onClick={() => onSelectTag(isActiveTag ? "" : tag)}
+                onClick={() => onToggleTag(tag)}
                 className={`rounded-full border px-3 py-1 text-xs transition-colors ${
                   isActiveTag
                     ? "border-zinc-900 bg-zinc-900 font-medium text-white"
@@ -607,7 +563,7 @@ function JobCard({
           )}
 
           {job.requirementsHtml && (
-            <div className="flex flex-col gap-2 rounded-xl border border-amber-200/80 bg-amber-50/60 p-4">
+            <div className="flex flex-col gap-2 rounded-xl border border-amber-200/70 bg-amber-50/50 p-4">
               <h3 className="text-sm font-semibold text-amber-950">
                 คุณสมบัติและเงื่อนไขเพิ่มเติม
               </h3>
@@ -669,7 +625,7 @@ function JobCard({
                     href={websiteUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
+                    className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
                   >
                     Website ↗
                   </a>
@@ -679,13 +635,13 @@ function JobCard({
                     href={facebookUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100"
+                    className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
                   >
                     Facebook ↗
                   </a>
                 )}
                 {job.companyLine && (
-                  <span className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                  <span className="rounded-lg border border-zinc-200 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700">
                     LINE: {job.companyLine}
                   </span>
                 )}
@@ -695,24 +651,48 @@ function JobCard({
                 !websiteUrl &&
                 !facebookUrl &&
                 !job.companyLine && (
-                  <p className="text-xs text-zinc-500">ไม่มีข้อมูลติดต่อเพิ่มเติม</p>
+                  <p className="text-xs text-zinc-500">
+                    ไม่มีข้อมูลติดต่อเพิ่มเติม
+                  </p>
                 )}
             </div>
           </div>
         </div>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <button
-          type="button"
-          aria-expanded={isExpanded}
-          onClick={() => setIsExpanded((prev) => !prev)}
-          className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
-        >
-          {isExpanded
-            ? "ซ่อนรายละเอียดเต็ม ▲"
-            : "ดูรายละเอียดเต็ม / คุณสมบัติ / ช่องทางติดต่อ ▼"}
-        </button>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onToggleShortlist(job.id)}
+            className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+              isShortlisted
+                ? "border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300 hover:bg-zinc-50"
+            }`}
+          >
+            {isShortlisted
+              ? `★ เล็งไว้แล้ว (#${shortlistRank})`
+              : "☆ เก็บไว้จัดอันดับ"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onOpenModal(job)}
+            className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
+          >
+            อ่านรายละเอียดเต็ม (Modal)
+          </button>
+
+          <button
+            type="button"
+            aria-expanded={isExpanded}
+            onClick={() => setIsExpanded((prev) => !prev)}
+            className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+          >
+            {isExpanded ? "ย่อการ์ด ▲" : "กางในการ์ด ▼"}
+          </button>
+        </div>
 
         <a
           href={openingUrl}
@@ -728,7 +708,12 @@ function JobCard({
 }
 
 const JobBoard = () => {
+  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
   const [cookieValue, setCookieValue] = useState<string>("");
+  const [rememberCookie, setRememberCookie] = useState(false);
+  const [showCookie, setShowCookie] = useState(false);
+  const [isCookieGuideOpen, setIsCookieGuideOpen] = useState(false);
+
   const [sessions, setSessions] = useState<InternSession[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(
     null,
@@ -737,6 +722,8 @@ const JobBoard = () => {
   const [selectedRoundNumber, setSelectedRoundNumber] = useState<number | null>(
     null,
   );
+  const [isPoolInfoExpanded, setIsPoolInfoExpanded] = useState(true);
+
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   const [remoteJobs, setRemoteJobs] = useState<Job[] | null>(null);
   const [remoteTags, setRemoteTags] = useState<string[] | null>(null);
@@ -744,19 +731,178 @@ const JobBoard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string>("");
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagMatchMode, setTagMatchMode] = useState<TagMatchMode>("any");
+  const [tagSearchQuery, setTagSearchQuery] = useState("");
   const [selectedWorkingConditions, setSelectedWorkingConditions] = useState<
     WorkingConditionCategory[]
   >([]);
   const [coopFilter, setCoopFilter] = useState<CoopFilter>("all");
+  const [minCompensation, setMinCompensation] = useState<number | null>(null);
+  const [hideUnspecifiedCompensation, setHideUnspecifiedCompensation] =
+    useState(false);
+  const [onlyLowCompetition, setOnlyLowCompetition] = useState(false);
+  const [onlyShortlisted, setOnlyShortlisted] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [onlyBookmarked, setOnlyBookmarked] = useState(false);
   const [onlyAcceptingApplication, setOnlyAcceptingApplication] =
     useState(true);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [sortMode, setSortMode] = useState<
-    "compensation" | "title" | "popularity"
-  >("compensation");
+  const [sortMode, setSortMode] = useState<SortMode>("compensation");
+
+  const [shortlistBySession, setShortlistBySession] = useState<
+    Record<string, number[]>
+  >({});
+  const [detailModalJobId, setDetailModalJobId] = useState<number | null>(null);
+  const [nowMs, setNowMs] = useState<number | null>(null);
+
+  useEffect(() => {
+    const hydrateAndStartClock = () => {
+      try {
+        const rawCookie = window.localStorage.getItem(COOKIE_STORAGE_KEY);
+        if (rawCookie) {
+          const parsed = JSON.parse(rawCookie) as Partial<CachedCookieData>;
+          if (parsed.rememberCookie) {
+            setRememberCookie(true);
+            if (typeof parsed.cookieValue === "string") {
+              setCookieValue(parsed.cookieValue);
+            }
+          }
+        }
+      } catch {
+        // Ignore malformed cookie storage
+      }
+
+      try {
+        const rawCache = window.localStorage.getItem(CACHE_STORAGE_KEY);
+        if (rawCache) {
+          const parsed = JSON.parse(rawCache) as Partial<CachedBoardData>;
+          if (Array.isArray(parsed.sessions)) {
+            setSessions(parsed.sessions);
+          }
+          if (typeof parsed.selectedSessionId === "number") {
+            setSelectedSessionId(parsed.selectedSessionId);
+          }
+          if (typeof parsed.loadedSessionId === "number") {
+            setLoadedSessionId(parsed.loadedSessionId);
+          }
+          if (Array.isArray(parsed.remoteJobs)) {
+            setRemoteJobs(parsed.remoteJobs);
+          }
+          if (Array.isArray(parsed.remoteTags)) {
+            setRemoteTags(parsed.remoteTags);
+          }
+          if (parsed.remoteMeta !== undefined) {
+            setRemoteMeta(parsed.remoteMeta);
+          }
+          if (typeof parsed.lastUpdated === "string") {
+            setLastUpdated(parsed.lastUpdated);
+          }
+        }
+      } catch {
+        // Ignore malformed board cache
+      }
+
+      try {
+        const rawShortlist = window.localStorage.getItem(SHORTLIST_STORAGE_KEY);
+        if (rawShortlist) {
+          const parsed = JSON.parse(rawShortlist) as Record<string, unknown>;
+          if (parsed && typeof parsed === "object") {
+            const validated: Record<string, number[]> = {};
+            for (const [key, value] of Object.entries(parsed)) {
+              if (Array.isArray(value)) {
+                validated[key] = value.filter(
+                  (id): id is number => typeof id === "number",
+                );
+              }
+            }
+            setShortlistBySession(validated);
+          }
+        }
+      } catch {
+        // Ignore malformed shortlist storage
+      }
+
+      setHasHydratedStorage(true);
+      setNowMs(Date.now());
+    };
+
+    const timeoutId = window.setTimeout(hydrateAndStartClock, 0);
+    const intervalId = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 60_000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.clearInterval(intervalId);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydratedStorage) {
+      return;
+    }
+    try {
+      const payload: CachedBoardData = {
+        sessions,
+        selectedSessionId,
+        loadedSessionId,
+        remoteJobs,
+        remoteTags,
+        remoteMeta,
+        lastUpdated,
+      };
+      window.localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      // Ignore storage quota errors
+    }
+  }, [
+    hasHydratedStorage,
+    sessions,
+    selectedSessionId,
+    loadedSessionId,
+    remoteJobs,
+    remoteTags,
+    remoteMeta,
+    lastUpdated,
+  ]);
+
+  useEffect(() => {
+    if (!hasHydratedStorage) {
+      return;
+    }
+    try {
+      if (rememberCookie) {
+        const payload: CachedCookieData = {
+          rememberCookie: true,
+          cookieValue: sanitizeCookieInput(cookieValue),
+        };
+        window.localStorage.setItem(
+          COOKIE_STORAGE_KEY,
+          JSON.stringify(payload),
+        );
+      } else {
+        window.localStorage.removeItem(COOKIE_STORAGE_KEY);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, [hasHydratedStorage, rememberCookie, cookieValue]);
+
+  useEffect(() => {
+    if (!hasHydratedStorage) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(
+        SHORTLIST_STORAGE_KEY,
+        JSON.stringify(shortlistBySession),
+      );
+    } catch {
+      // Ignore storage errors
+    }
+  }, [hasHydratedStorage, shortlistBySession]);
 
   const selectedSession = useMemo(
     () =>
@@ -798,6 +944,73 @@ const JobBoard = () => {
     };
   }, [selectedSession, selectedRoundNumber]);
 
+  const scheduleMilestones = useMemo(() => {
+    if (!displayedRound) {
+      return [];
+    }
+    return [
+      {
+        key: "openingAnnouncementDate",
+        label: "วันประกาศตำแหน่งงาน",
+        iso: displayedRound.openingAnnouncementDate,
+      },
+      {
+        key: "openingSubmissionDeadline",
+        label: "วันปิดรับส่งตำแหน่งงาน (บริษัท)",
+        iso: displayedRound.openingSubmissionDeadline,
+      },
+      {
+        key: "applicationAnnouncementDate",
+        label: "วันประกาศรายชื่อผู้สมัคร",
+        iso: displayedRound.applicationAnnouncementDate,
+      },
+      {
+        key: "studentRankingDeadline",
+        label: "วันปิดรับการจัดอันดับของนิสิต",
+        iso: displayedRound.studentRankingDeadline,
+      },
+      {
+        key: "reorderRankingDeadline",
+        label: "วันปิดรับการปรับอันดับ (Reorder)",
+        iso: displayedRound.reorderRankingDeadline,
+      },
+      {
+        key: "cancelRankingDeadline",
+        label: "วันปิดรับการยกเลิก/สละสิทธิ์",
+        iso: displayedRound.cancelRankingDeadline,
+      },
+      {
+        key: "companyRankingDeadline",
+        label: "วันปิดรับการจัดอันดับของบริษัท",
+        iso: displayedRound.companyRankingDeadline,
+      },
+      {
+        key: "resultAnnouncementDate",
+        label: "วันประกาศผลการจับคู่",
+        iso: displayedRound.resultAnnouncementDate,
+      },
+    ];
+  }, [displayedRound]);
+
+  const nextMilestoneKey = useMemo(() => {
+    if (nowMs == null) {
+      return null;
+    }
+    let earliestKey: string | null = null;
+    let earliestTs = Number.POSITIVE_INFINITY;
+    for (const item of scheduleMilestones) {
+      if (!item.iso) {
+        continue;
+      }
+      const ts = new Date(item.iso).getTime();
+      if (!Number.isNaN(ts) && ts >= nowMs && ts < earliestTs) {
+        earliestTs = ts;
+        earliestKey = item.key;
+      }
+    }
+    return earliestKey;
+  }, [scheduleMilestones, nowMs]);
+
   const maxApplicationsPerStudent = useMemo(() => {
     const count = activeLoadedSession?.maximumApplicationPerStudent;
     return count && count > 0 ? count : 5;
@@ -813,6 +1026,43 @@ const JobBoard = () => {
     }
     return collectTagsFromJobs(activeJobs);
   }, [activeJobs, remoteTags]);
+
+  const shortlistKey = String(activeSessionIdForLinks);
+  const currentShortlistIds = useMemo(
+    () => shortlistBySession[shortlistKey] ?? [],
+    [shortlistBySession, shortlistKey],
+  );
+  const shortlistRankMap = useMemo(() => {
+    const map = new Map<number, number>();
+    currentShortlistIds.forEach((id, idx) => {
+      map.set(id, idx + 1);
+    });
+    return map;
+  }, [currentShortlistIds]);
+  const shortlistSet = useMemo(
+    () => new Set<number>(currentShortlistIds),
+    [currentShortlistIds],
+  );
+
+  const shortlistedJobs = useMemo(() => {
+    if (currentShortlistIds.length === 0 || activeJobs.length === 0) {
+      return [];
+    }
+    const jobMap = new Map<number, Job>();
+    for (const job of activeJobs) {
+      jobMap.set(job.id, job);
+    }
+    return currentShortlistIds
+      .map((id) => jobMap.get(id))
+      .filter((job): job is Job => Boolean(job));
+  }, [activeJobs, currentShortlistIds]);
+
+  const detailModalJob = useMemo(() => {
+    if (detailModalJobId == null) {
+      return null;
+    }
+    return activeJobs.find((job) => job.id === detailModalJobId) ?? null;
+  }, [activeJobs, detailModalJobId]);
 
   const tagCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -831,13 +1081,27 @@ const JobBoard = () => {
     return counts;
   }, [activeJobs, onlyAcceptingApplication]);
 
+  const filteredTagOptions = useMemo(() => {
+    const q = tagSearchQuery.trim().toLowerCase();
+    if (!q) {
+      return activeTags;
+    }
+    return activeTags.filter((tag) => tag.toLowerCase().includes(q));
+  }, [activeTags, tagSearchQuery]);
+
   const displayJobs = useMemo(
     () =>
       buildFilterableJobs(
         activeJobs,
-        selectedTag,
+        selectedTags,
+        tagMatchMode,
         selectedWorkingConditions,
         coopFilter,
+        minCompensation,
+        hideUnspecifiedCompensation,
+        onlyLowCompetition,
+        onlyShortlisted,
+        shortlistSet,
         searchQuery,
         onlyBookmarked,
         onlyAcceptingApplication,
@@ -846,9 +1110,15 @@ const JobBoard = () => {
       ),
     [
       activeJobs,
-      selectedTag,
+      selectedTags,
+      tagMatchMode,
       selectedWorkingConditions,
       coopFilter,
+      minCompensation,
+      hideUnspecifiedCompensation,
+      onlyLowCompetition,
+      onlyShortlisted,
+      shortlistSet,
       searchQuery,
       onlyBookmarked,
       onlyAcceptingApplication,
@@ -876,47 +1146,198 @@ const JobBoard = () => {
 
   const hasActiveFilters =
     searchQuery.trim().length > 0 ||
-    selectedTag.length > 0 ||
+    selectedTags.length > 0 ||
     selectedWorkingConditions.length > 0 ||
     coopFilter !== "all" ||
+    minCompensation != null ||
+    hideUnspecifiedCompensation ||
+    onlyLowCompetition ||
+    onlyShortlisted ||
     onlyBookmarked ||
     !onlyAcceptingApplication;
 
+  const hasSavedCache =
+    sessions.length > 0 || activeJobs.length > 0 || rememberCookie;
+
   const resetFilters = () => {
     setSearchQuery("");
-    setSelectedTag("");
+    setSelectedTags([]);
+    setTagSearchQuery("");
     setSelectedWorkingConditions([]);
     setCoopFilter("all");
+    setMinCompensation(null);
+    setHideUnspecifiedCompensation(false);
+    setOnlyLowCompetition(false);
+    setOnlyShortlisted(false);
     setOnlyBookmarked(false);
     setOnlyAcceptingApplication(true);
   };
 
-  useEffect(() => {
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) => {
+      const exists = prev.some(
+        (item) => item.toLowerCase() === tag.toLowerCase(),
+      );
+      if (exists) {
+        return prev.filter((item) => item.toLowerCase() !== tag.toLowerCase());
+      }
+      return [...prev, tag];
+    });
+  };
+
+  const toggleShortlist = (jobId: number) => {
+    setShortlistBySession((prev) => {
+      const current = prev[shortlistKey] ?? [];
+      if (current.includes(jobId)) {
+        return {
+          ...prev,
+          [shortlistKey]: current.filter((id) => id !== jobId),
+        };
+      }
+      return {
+        ...prev,
+        [shortlistKey]: [...current, jobId],
+      };
+    });
+  };
+
+  const moveShortlistUp = (index: number) => {
+    if (index <= 0) {
+      return;
+    }
+    setShortlistBySession((prev) => {
+      const current = [...(prev[shortlistKey] ?? [])];
+      if (index >= current.length) {
+        return prev;
+      }
+      [current[index - 1], current[index]] = [
+        current[index],
+        current[index - 1],
+      ];
+      return { ...prev, [shortlistKey]: current };
+    });
+  };
+
+  const moveShortlistDown = (index: number) => {
+    if (index < 0) {
+      return;
+    }
+    setShortlistBySession((prev) => {
+      const current = [...(prev[shortlistKey] ?? [])];
+      if (index >= current.length - 1) {
+        return prev;
+      }
+      [current[index], current[index + 1]] = [
+        current[index + 1],
+        current[index],
+      ];
+      return { ...prev, [shortlistKey]: current };
+    });
+  };
+
+  const clearShortlist = () => {
+    setShortlistBySession((prev) => {
+      const next = { ...prev };
+      delete next[shortlistKey];
+      return next;
+    });
+  };
+
+  const clearAllSavedData = () => {
+    try {
+      window.localStorage.removeItem(CACHE_STORAGE_KEY);
+      window.localStorage.removeItem(COOKIE_STORAGE_KEY);
+      window.localStorage.removeItem(SHORTLIST_STORAGE_KEY);
+    } catch {
+      // Ignore storage errors
+    }
+    setCookieValue("");
+    setRememberCookie(false);
+    setSessions([]);
+    setSelectedSessionId(null);
+    setLoadedSessionId(null);
+    setSelectedRoundNumber(null);
+    setRemoteJobs(null);
+    setRemoteTags(null);
+    setRemoteMeta(null);
+    setLastUpdated(null);
+    setShortlistBySession({});
     setLoadError(null);
-  }, []);
+    setDetailModalJobId(null);
+  };
 
-  useEffect(() => {
-    if (selectedSession) {
-      setSelectedRoundNumber(selectedSession.currentRound);
-    } else {
-      setSelectedRoundNumber(null);
+  const fetchJobsForSession = async (
+    sessionId: number,
+    cookieOverride?: string,
+  ) => {
+    const cleanCookie = sanitizeCookieInput(cookieOverride ?? cookieValue);
+    if (!cleanCookie) {
+      setLoadError("กรุณากรอก cookie ก่อนโหลดข้อมูล");
+      return;
     }
-  }, [selectedSession]);
 
-  useEffect(() => {
-    if (
-      selectedTag &&
-      !activeTags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
-    ) {
-      setSelectedTag("");
+    setIsLoading(true);
+    setLoadError(null);
+
+    try {
+      const response = await fetch("/api/intern", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cookie: cleanCookie,
+          sessionId,
+          onlyAvailablePositions: false,
+        }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(
+          payload?.error ?? `โหลดข้อมูลไม่สำเร็จ (HTTP ${response.status})`,
+        );
+      }
+
+      const payload = (await response.json()) as {
+        jobs: Job[];
+        allTags: string[];
+        meta?: InternOpeningsMeta | null;
+        fetchedAt?: string | null;
+      };
+
+      const nextJobs = payload.jobs ?? [];
+      const nextTags = payload.allTags ?? [];
+
+      setRemoteJobs(nextJobs);
+      setRemoteTags(nextTags);
+      setRemoteMeta(payload.meta ?? null);
+      setLoadedSessionId(sessionId);
+      setLastUpdated(payload.fetchedAt ?? null);
+
+      const tagSet = new Set(nextTags.map((t) => t.toLowerCase()));
+      setSelectedTags((prev) =>
+        prev.filter((tag) => tagSet.has(tag.toLowerCase())),
+      );
+    } catch (error) {
+      setLoadError(
+        error instanceof Error ? error.message : "โหลดข้อมูลไม่สำเร็จ",
+      );
+    } finally {
+      setIsLoading(false);
     }
-  }, [activeTags, selectedTag]);
+  };
 
   const loadSessions = async () => {
-    const trimmedCookie = cookieValue.trim();
-    if (!trimmedCookie) {
-      setLoadError("กรุณากรอก cookie ก่อนดึงรายการ Pool");
+    const cleanCookie = sanitizeCookieInput(cookieValue);
+    if (!cleanCookie) {
+      setLoadError("กรุณากรอก cookie ก่อนดึงข้อมูล");
       return;
+    }
+    if (cleanCookie !== cookieValue) {
+      setCookieValue(cleanCookie);
     }
 
     setIsLoadingSessions(true);
@@ -928,7 +1349,7 @@ const JobBoard = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ cookie: trimmedCookie }),
+        body: JSON.stringify({ cookie: cleanCookie }),
       });
 
       if (!response.ok) {
@@ -957,74 +1378,20 @@ const JobBoard = () => {
       const stillExists = fetchedSessions.some(
         (item) => item.sessionId === selectedSessionId,
       );
-      if (!stillExists) {
-        const latestSession = fetchedSessions[fetchedSessions.length - 1];
-        setSelectedSessionId(latestSession.sessionId);
-      }
+      const targetSessionId = stillExists
+        ? (selectedSessionId as number)
+        : fetchedSessions[fetchedSessions.length - 1].sessionId;
+
+      setSelectedSessionId(targetSessionId);
+      setSelectedRoundNumber(null);
+
+      await fetchJobsForSession(targetSessionId, cleanCookie);
     } catch (error) {
       setLoadError(
         error instanceof Error ? error.message : "ดึงรายการ Pool ไม่สำเร็จ",
       );
     } finally {
       setIsLoadingSessions(false);
-    }
-  };
-
-  const loadRemoteJobs = async () => {
-    const trimmedCookie = cookieValue.trim();
-    if (!trimmedCookie) {
-      setLoadError("กรุณากรอก cookie ก่อนโหลดข้อมูล");
-      return;
-    }
-
-    if (selectedSessionId == null) {
-      setLoadError("กรุณาเลือก Pool ก่อนโหลดข้อมูลตำแหน่งงาน");
-      return;
-    }
-
-    setIsLoading(true);
-    setLoadError(null);
-
-    try {
-      const response = await fetch("/api/intern", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cookie: trimmedCookie,
-          sessionId: selectedSessionId,
-          onlyAvailablePositions: false,
-        }),
-      });
-
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        throw new Error(
-          payload?.error ?? `โหลดข้อมูลไม่สำเร็จ (HTTP ${response.status})`,
-        );
-      }
-
-      const payload = (await response.json()) as {
-        jobs: Job[];
-        allTags: string[];
-        meta?: InternOpeningsMeta | null;
-        fetchedAt?: string | null;
-      };
-
-      setRemoteJobs(payload.jobs ?? []);
-      setRemoteTags(payload.allTags ?? []);
-      setRemoteMeta(payload.meta ?? null);
-      setLoadedSessionId(selectedSessionId);
-      setLastUpdated(payload.fetchedAt ?? null);
-    } catch (error) {
-      setLoadError(
-        error instanceof Error ? error.message : "โหลดข้อมูลไม่สำเร็จ",
-      );
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -1041,46 +1408,104 @@ const JobBoard = () => {
     <section className="flex flex-col gap-8">
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-zinc-600">
-                1. กรอก Cookie เพื่อดึงรายการ Pool
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium text-zinc-700">
+                  1. กรอก Cookie เพื่อดึงรายการ Pool และตำแหน่งงาน (คลิกเดียว)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsCookieGuideOpen(true)}
+                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                >
+                  วิธีดู Cookie?
+                </button>
+              </div>
               <span className="text-xs text-zinc-500">
-                Cookie จะถูกใช้แค่ครั้งนี้และไม่ถูกบันทึกไว้
+                รองรับการวางทั้งข้อความที่มีคำว่า Cookie: ติดมาด้วย
+                ระบบจะตัดออกให้อัตโนมัติ
               </span>
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <input
-                value={cookieValue}
-                onChange={(event) => setCookieValue(event.target.value)}
-                placeholder="กรอก cookie จากเบราว์เซอร์"
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[320px]"
-              />
-              <button
-                type="button"
-                onClick={loadSessions}
-                disabled={isLoadingSessions || isLoading}
-                className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  isLoadingSessions || isLoading
-                    ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
-                    : "bg-zinc-900 text-white hover:bg-zinc-800"
-                }`}
-              >
-                {isLoadingSessions ? "กำลังดึง Pool..." : "ดึงรายการ Pool"}
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <div className="relative flex flex-1 items-center">
+                  <input
+                    type={showCookie ? "text" : "password"}
+                    value={cookieValue}
+                    onChange={(event) => setCookieValue(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === "Enter" &&
+                        !isLoadingSessions &&
+                        !isLoading
+                      ) {
+                        void loadSessions();
+                      }
+                    }}
+                    placeholder="วาง cookie จากเบราว์เซอร์..."
+                    className="w-full rounded-lg border border-zinc-300 py-2 pr-14 pl-3 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[340px]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCookie((prev) => !prev)}
+                    className="absolute right-2 rounded px-2 py-1 text-xs font-medium text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800"
+                  >
+                    {showCookie ? "ซ่อน" : "แสดง"}
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={loadSessions}
+                  disabled={isLoadingSessions || isLoading}
+                  className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    isLoadingSessions || isLoading
+                      ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
+                      : "bg-zinc-900 text-white hover:bg-zinc-800"
+                  }`}
+                >
+                  {isLoadingSessions || isLoading
+                    ? "กำลังดึงข้อมูล..."
+                    : "ดึง Pool และโหลดงาน"}
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <label className="flex items-center gap-2 text-xs text-zinc-600">
+                  <input
+                    type="checkbox"
+                    checked={rememberCookie}
+                    onChange={(event) =>
+                      setRememberCookie(event.target.checked)
+                    }
+                    className="h-3.5 w-3.5 accent-zinc-900"
+                  />
+                  จำ Cookie ไว้ในเบราว์เซอร์นี้ (อย่าติ๊กหากใช้เครื่องสาธารณะ)
+                </label>
+
+                {hasSavedCache && (
+                  <button
+                    type="button"
+                    onClick={clearAllSavedData}
+                    className="text-xs font-medium text-rose-600 hover:text-rose-700"
+                  >
+                    ล้างข้อมูลที่บันทึกไว้
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
           {sessions.length > 0 && (
             <div className="flex flex-col gap-3 border-t border-zinc-100 pt-4 md:flex-row md:items-center md:justify-between">
               <div className="flex flex-col gap-1">
-                <span className="text-sm font-medium text-zinc-600">
+                <span className="text-sm font-medium text-zinc-700">
                   2. เลือก Pool ที่ต้องการดูข้อมูล
                 </span>
                 <span className="text-xs text-zinc-500">
-                  เลือก Pool แล้วกดโหลดข้อมูลตำแหน่งงาน
+                  เมื่อเปลี่ยน Pool ระบบจะโหลดตำแหน่งงานให้อัตโนมัติ (หากมี Cookie)
                 </span>
               </div>
 
@@ -1088,10 +1513,15 @@ const JobBoard = () => {
                 <select
                   aria-label="เลือก Pool"
                   value={selectedSessionId ?? ""}
-                  onChange={(event) =>
-                    setSelectedSessionId(Number(event.target.value))
-                  }
-                  className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[240px]"
+                  onChange={(event) => {
+                    const nextSessionId = Number(event.target.value);
+                    setSelectedSessionId(nextSessionId);
+                    setSelectedRoundNumber(null);
+                    if (sanitizeCookieInput(cookieValue)) {
+                      void fetchJobsForSession(nextSessionId);
+                    }
+                  }}
+                  className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200 sm:min-w-[260px]"
                 >
                   {sessions.map((session) => (
                     <option key={session.sessionId} value={session.sessionId}>
@@ -1101,17 +1531,21 @@ const JobBoard = () => {
                 </select>
                 <button
                   type="button"
-                  onClick={loadRemoteJobs}
+                  onClick={() => {
+                    if (selectedSessionId != null) {
+                      void fetchJobsForSession(selectedSessionId);
+                    }
+                  }}
                   disabled={
                     isLoading || isLoadingSessions || selectedSessionId == null
                   }
                   className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                     isLoading || isLoadingSessions || selectedSessionId == null
                       ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
-                      : "bg-zinc-900 text-white hover:bg-zinc-800"
+                      : "border border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-50"
                   }`}
                 >
-                  {isLoading ? "กำลังโหลดข้อมูล..." : "โหลดข้อมูลตำแหน่งงาน"}
+                  {isLoading ? "กำลังโหลด..." : "รีเฟรชตำแหน่งงาน"}
                 </button>
               </div>
             </div>
@@ -1123,15 +1557,15 @@ const JobBoard = () => {
         )}
         {lastUpdated && (
           <span className="mt-2 block text-xs text-zinc-500">
-            อัปเดตข้อมูลตำแหน่งงานล่าสุด:{" "}
+            อัปเดตข้อมูลล่าสุด:{" "}
             {new Date(lastUpdated).toLocaleString("th-TH", {
               timeZone: "Asia/Bangkok",
             })}{" "}
-            (Pool:{" "}
+            • Pool:{" "}
             {activeLoadedSession
               ? formatSessionLabel(activeLoadedSession)
               : `Session ${activeSessionIdForLinks}`}
-            {remoteMeta ? ` • จากระบบ ${remoteMeta.totalItem} รายการ` : ""})
+            {remoteMeta ? ` (${remoteMeta.totalItem} รายการ)` : ""}
           </span>
         )}
       </div>
@@ -1139,7 +1573,7 @@ const JobBoard = () => {
       {selectedSession && (
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-lg font-semibold text-zinc-900">
@@ -1156,7 +1590,7 @@ const JobBoard = () => {
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700">
                   รอบปัจจุบัน: รอบที่ {selectedSession.currentRound}
                 </span>
@@ -1176,7 +1610,7 @@ const JobBoard = () => {
                   className={`rounded-full border px-3 py-1 text-xs font-medium ${
                     selectedSession.isMatchingInitiated
                       ? "border-blue-200 bg-blue-50 text-blue-700"
-                      : "border-amber-200 bg-amber-50 text-amber-700"
+                      : "border-amber-200 bg-amber-50 text-amber-800"
                   }`}
                 >
                   สถานะการจับคู่:{" "}
@@ -1184,192 +1618,329 @@ const JobBoard = () => {
                     ? "เริ่มการจับคู่แล้ว"
                     : "ยังไม่เริ่มการจับคู่"}
                 </span>
+                <button
+                  type="button"
+                  aria-expanded={isPoolInfoExpanded}
+                  onClick={() => setIsPoolInfoExpanded((prev) => !prev)}
+                  className="rounded-full border border-zinc-300 bg-white px-3 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
+                >
+                  {isPoolInfoExpanded ? "พับกำหนดการ ▲" : "ดูกำหนดการ ▼"}
+                </button>
               </div>
             </div>
 
-            <div className="grid gap-3 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-sm text-zinc-700 sm:grid-cols-3">
-              <div>
-                <span className="block text-xs text-zinc-500">
-                  จำนวนการสมัครขั้นต่ำต่อนิสิต
-                </span>
-                <span className="font-semibold text-zinc-900">
-                  {selectedSession.minimumApplicationPerStudent} อันดับ
-                </span>
-              </div>
-              <div>
-                <span className="block text-xs text-zinc-500">
-                  จำนวนการสมัครสูงสุดต่อนิสิต
-                </span>
-                <span className="font-semibold text-zinc-900">
-                  {selectedSession.maximumApplicationPerStudent} อันดับ
-                </span>
-              </div>
-              <div>
-                <span className="block text-xs text-zinc-500">
-                  จำนวนบริษัทไม่ซ้ำขั้นต่ำ
-                </span>
-                <span className="font-semibold text-zinc-900">
-                  {selectedSession.minimumUniqueCompanyCountPerStudent} บริษัท
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm font-medium text-zinc-700">
-                  กำหนดการของ Pool (เวลาไทย UTC+7)
-                </span>
-                {selectedSession.rounds && selectedSession.rounds.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedSession.rounds.map((roundItem) => {
-                      const activeRound =
-                        (selectedRoundNumber ?? selectedSession.currentRound) ===
-                        roundItem.round;
-                      return (
-                        <button
-                          key={roundItem.round}
-                          type="button"
-                          onClick={() =>
-                            setSelectedRoundNumber(roundItem.round)
-                          }
-                          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                            activeRound
-                              ? "border-zinc-900 bg-zinc-900 text-white"
-                              : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
-                          }`}
-                        >
-                          รอบที่ {roundItem.round}
-                          {roundItem.round === selectedSession.currentRound
-                            ? " (ปัจจุบัน)"
-                            : ""}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {displayedRound && (
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <div className="rounded-xl border border-zinc-200 p-3">
+            {isPoolInfoExpanded && (
+              <>
+                <div className="grid gap-3 rounded-xl border border-zinc-100 bg-zinc-50 p-4 text-sm text-zinc-700 sm:grid-cols-3">
+                  <div>
                     <span className="block text-xs text-zinc-500">
-                      วันประกาศตำแหน่งงาน
+                      จำนวนการสมัครขั้นต่ำต่อนิสิต
                     </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(
-                        displayedRound.openingAnnouncementDate,
-                      )}
+                    <span className="font-semibold text-zinc-900">
+                      {selectedSession.minimumApplicationPerStudent} อันดับ
                     </span>
                   </div>
-                  <div className="rounded-xl border border-zinc-200 p-3">
+                  <div>
                     <span className="block text-xs text-zinc-500">
-                      วันปิดรับส่งตำแหน่งงาน (บริษัท)
+                      จำนวนการสมัครสูงสุดต่อนิสิต
                     </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(
-                        displayedRound.openingSubmissionDeadline,
-                      )}
+                    <span className="font-semibold text-zinc-900">
+                      {selectedSession.maximumApplicationPerStudent} อันดับ
                     </span>
                   </div>
-                  <div className="rounded-xl border border-zinc-200 p-3">
+                  <div>
                     <span className="block text-xs text-zinc-500">
-                      วันประกาศรายชื่อผู้สมัคร
+                      จำนวนบริษัทไม่ซ้ำขั้นต่ำ
                     </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(
-                        displayedRound.applicationAnnouncementDate,
-                      )}
-                    </span>
-                  </div>
-                  <div className="rounded-xl border border-zinc-200 p-3">
-                    <span className="block text-xs text-zinc-500">
-                      วันปิดรับการจัดอันดับของนิสิต
-                    </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(
-                        displayedRound.studentRankingDeadline,
-                      )}
-                    </span>
-                  </div>
-                  <div className="rounded-xl border border-zinc-200 p-3">
-                    <span className="block text-xs text-zinc-500">
-                      วันปิดรับการปรับอันดับ (Reorder)
-                    </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(
-                        displayedRound.reorderRankingDeadline,
-                      )}
-                    </span>
-                  </div>
-                  <div className="rounded-xl border border-zinc-200 p-3">
-                    <span className="block text-xs text-zinc-500">
-                      วันปิดรับการยกเลิก/สละสิทธิ์
-                    </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(displayedRound.cancelRankingDeadline)}
-                    </span>
-                  </div>
-                  <div className="rounded-xl border border-zinc-200 p-3">
-                    <span className="block text-xs text-zinc-500">
-                      วันปิดรับการจัดอันดับของบริษัท
-                    </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(
-                        displayedRound.companyRankingDeadline,
-                      )}
-                    </span>
-                  </div>
-                  <div className="rounded-xl border border-zinc-200 p-3">
-                    <span className="block text-xs text-zinc-500">
-                      วันประกาศผลการจับคู่
-                    </span>
-                    <span className="mt-1 block text-sm font-medium text-zinc-900">
-                      {formatDateTimeUtc7(
-                        displayedRound.resultAnnouncementDate,
-                      )}
+                    <span className="font-semibold text-zinc-900">
+                      {selectedSession.minimumUniqueCompanyCountPerStudent}{" "}
+                      บริษัท
                     </span>
                   </div>
                 </div>
-              )}
-            </div>
+
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-sm font-medium text-zinc-700">
+                      กำหนดการของ Pool (เวลาไทย UTC+7)
+                    </span>
+                    {selectedSession.rounds &&
+                      selectedSession.rounds.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedSession.rounds.map((roundItem) => {
+                            const activeRound =
+                              (selectedRoundNumber ??
+                                selectedSession.currentRound) ===
+                              roundItem.round;
+                            return (
+                              <button
+                                key={roundItem.round}
+                                type="button"
+                                onClick={() =>
+                                  setSelectedRoundNumber(roundItem.round)
+                                }
+                                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                                  activeRound
+                                    ? "border-zinc-900 bg-zinc-900 text-white"
+                                    : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                                }`}
+                              >
+                                รอบที่ {roundItem.round}
+                                {roundItem.round ===
+                                selectedSession.currentRound
+                                  ? " (ปัจจุบัน)"
+                                  : ""}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                  </div>
+
+                  {scheduleMilestones.length > 0 && (
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                      {scheduleMilestones.map((item) => {
+                        const ts = item.iso ? new Date(item.iso).getTime() : NaN;
+                        const hasValidDate = !Number.isNaN(ts);
+                        const isPassed =
+                          nowMs != null && hasValidDate && ts < nowMs;
+                        const isNext = item.key === nextMilestoneKey;
+
+                        return (
+                          <div
+                            key={item.key}
+                            className={`rounded-xl border p-3 transition-colors ${
+                              isNext
+                                ? "border-blue-300 bg-blue-50/40"
+                                : isPassed
+                                  ? "border-zinc-200 bg-zinc-50 opacity-65"
+                                  : "border-zinc-200 bg-white"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs text-zinc-500">
+                                {item.label}
+                              </span>
+                            </div>
+                            <span className="mt-1 block text-sm font-medium text-zinc-900">
+                              {formatDateTimeUtc7(item.iso)}
+                            </span>
+                            {isNext && nowMs != null && hasValidDate && (
+                              <span className="mt-1.5 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-medium text-blue-800">
+                                กำลังจะมาถึง •{" "}
+                                {formatRelativeCountdown(ts, nowMs)}
+                              </span>
+                            )}
+                            {isPassed && (
+                              <span className="mt-1.5 inline-block rounded-full bg-zinc-200/80 px-2 py-0.5 text-[11px] font-medium text-zinc-600">
+                                ผ่านไปแล้ว
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
 
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
-        <div className="grid gap-6 md:grid-cols-2 md:items-end">
-          <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-zinc-600">
-              ค้นหาตำแหน่ง บริษัท แท็ก หรือสถานที่
-            </span>
-            <input
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="พิมพ์คำค้น เช่น Software Engineer, BTS, Python..."
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
-            />
-          </label>
+        <div className="flex flex-col gap-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-zinc-600">
+                ค้นหาตำแหน่ง บริษัท แท็ก สถานที่ หรือรายละเอียดงาน
+              </span>
+              <input
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="พิมพ์คำค้น เช่น Backend, BTS, Python, Docker..."
+                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+              />
+            </label>
 
-          <label className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-zinc-600">เลือกแท็ก</span>
-            <select
-              value={selectedTag}
-              onChange={(event) => setSelectedTag(event.target.value)}
-              className="rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
-            >
-              <option value="">ทุกแท็ก</option>
-              {activeTags.map((tag) => {
-                const count = tagCounts.get(tag.toLowerCase());
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-medium text-zinc-600">
+                  กรองตามแท็ก (เลือกได้หลายแท็ก)
+                </span>
+                {selectedTags.length > 1 && (
+                  <div className="flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-50 p-0.5 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setTagMatchMode("any")}
+                      className={`rounded-full px-2.5 py-0.5 transition-colors ${
+                        tagMatchMode === "any"
+                          ? "bg-zinc-900 font-medium text-white"
+                          : "text-zinc-600 hover:text-zinc-900"
+                      }`}
+                    >
+                      อย่างน้อย 1 แท็ก (OR)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTagMatchMode("all")}
+                      className={`rounded-full px-2.5 py-0.5 transition-colors ${
+                        tagMatchMode === "all"
+                          ? "bg-zinc-900 font-medium text-white"
+                          : "text-zinc-600 hover:text-zinc-900"
+                      }`}
+                    >
+                      ครบทุกแท็ก (AND)
+                    </button>
+                  </div>
+                )}
+              </div>
+              <input
+                value={tagSearchQuery}
+                onChange={(event) => setTagSearchQuery(event.target.value)}
+                placeholder="ค้นหาชื่อแท็ก..."
+                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+              />
+            </div>
+          </div>
+
+          {selectedTags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5">
+              <span className="text-xs font-medium text-zinc-600">
+                แท็กที่เลือก ({selectedTags.length}):
+              </span>
+              {selectedTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => toggleTag(tag)}
+                  className="inline-flex items-center gap-1 rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-700"
+                >
+                  <span>{tag}</span>
+                  <span aria-hidden="true">×</span>
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setSelectedTags([])}
+                className="ml-auto text-xs font-medium text-rose-600 hover:text-rose-700"
+              >
+                ล้างแท็ก
+              </button>
+            </div>
+          )}
+
+          {activeTags.length > 0 && (
+            <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-xl border border-zinc-200 bg-zinc-50/50 p-3">
+              {filteredTagOptions.length === 0 ? (
+                <span className="text-xs text-zinc-500">
+                  ไม่พบแท็กที่ตรงกับ &ldquo;{tagSearchQuery}&rdquo;
+                </span>
+              ) : (
+                filteredTagOptions.map((tag) => {
+                  const isSelected = selectedTags.some(
+                    (item) => item.toLowerCase() === tag.toLowerCase(),
+                  );
+                  const count = tagCounts.get(tag.toLowerCase()) ?? 0;
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                        isSelected
+                          ? "border-zinc-900 bg-zinc-900 font-medium text-white"
+                          : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300 hover:bg-zinc-100"
+                      }`}
+                    >
+                      {tag} ({count})
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          )}
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="flex flex-col gap-3">
+              <span className="text-sm font-medium text-zinc-600">
+                รูปแบบการทำงาน
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {WORKING_CONDITION_OPTIONS.map((option) => {
+                  const isActive = selectedWorkingConditions.includes(
+                    option.value,
+                  );
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => toggleWorkingCondition(option.value)}
+                      className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                        isActive
+                          ? "border-zinc-900 bg-zinc-900 text-white"
+                          : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <span className="text-sm font-medium text-zinc-600">
+                ประเภทสหกิจศึกษา (Co-op)
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {COOP_FILTER_OPTIONS.map((option) => {
+                  const isActive = coopFilter === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setCoopFilter(option.value)}
+                      className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                        isActive
+                          ? "border-zinc-900 bg-zinc-900 text-white"
+                          : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <span className="text-sm font-medium text-zinc-600">
+              ค่าตอบแทนขั้นต่ำโดยประมาณ (บาท/เดือน)
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {COMPENSATION_PRESETS.map((preset) => {
+                const isActive = minCompensation === preset.value;
                 return (
-                  <option key={tag} value={tag}>
-                    {count != null ? `${tag} (${count})` : tag}
-                  </option>
+                  <button
+                    key={preset.label}
+                    type="button"
+                    onClick={() => setMinCompensation(preset.value)}
+                    className={`rounded-full border px-3.5 py-1 text-sm transition-colors ${
+                      isActive
+                        ? "border-zinc-900 bg-zinc-900 text-white"
+                        : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
                 );
               })}
-            </select>
-          </label>
+            </div>
+          </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 md:col-span-2">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
               <input
                 type="checkbox"
@@ -1385,67 +1956,49 @@ const JobBoard = () => {
             <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
               <input
                 type="checkbox"
+                className="h-4 w-4 accent-zinc-900"
+                checked={onlyLowCompetition}
+                onChange={(event) =>
+                  setOnlyLowCompetition(event.target.checked)
+                }
+              />
+              เฉพาะงานที่คนเลือกน้อยกว่าโควตา
+            </label>
+
+            <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-zinc-900"
+                checked={hideUnspecifiedCompensation}
+                onChange={(event) =>
+                  setHideUnspecifiedCompensation(event.target.checked)
+                }
+              />
+              ซ่อนงานที่ไม่ระบุค่าตอบแทน
+            </label>
+
+            <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+              <input
+                type="checkbox"
                 className="h-4 w-4 accent-yellow-400"
                 checked={onlyBookmarked}
                 onChange={(event) => setOnlyBookmarked(event.target.checked)}
               />
               แสดงเฉพาะตำแหน่งที่กด Bookmark
             </label>
+
+            <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-amber-500"
+                checked={onlyShortlisted}
+                onChange={(event) => setOnlyShortlisted(event.target.checked)}
+              />
+              แสดงเฉพาะรายการที่เล็งไว้ ({currentShortlistIds.length})
+            </label>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <span className="text-sm font-medium text-zinc-600">
-              รูปแบบการทำงาน
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {WORKING_CONDITION_OPTIONS.map((option) => {
-                const isActive = selectedWorkingConditions.includes(
-                  option.value,
-                );
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => toggleWorkingCondition(option.value)}
-                    className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                      isActive
-                        ? "border-zinc-900 bg-zinc-900 text-white"
-                        : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <span className="text-sm font-medium text-zinc-600">
-              ประเภทสหกิจศึกษา (Co-op)
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {COOP_FILTER_OPTIONS.map((option) => {
-                const isActive = coopFilter === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => setCoopFilter(option.value)}
-                    className={`rounded-full border px-4 py-1 text-sm transition-colors ${
-                      isActive
-                        ? "border-zinc-900 bg-zinc-900 text-white"
-                        : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 md:col-span-2">
+          <div className="flex flex-col gap-3 border-t border-zinc-100 pt-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-sm font-medium text-zinc-600">
                 รูปแบบการจัดเรียง
@@ -1485,6 +2038,17 @@ const JobBoard = () => {
               </button>
               <button
                 type="button"
+                onClick={() => setSortMode("competition")}
+                className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                  sortMode === "competition"
+                    ? "border-zinc-900 bg-zinc-900 text-white"
+                    : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                }`}
+              >
+                อัตราการแข่งขัน (คนเลือก ÷ โควตา)
+              </button>
+              <button
+                type="button"
                 onClick={() => setSortMode("title")}
                 className={`rounded-full border px-4 py-1 text-sm transition-colors ${
                   sortMode === "title"
@@ -1509,7 +2073,9 @@ const JobBoard = () => {
                   ? "Z → A"
                   : sortMode === "popularity"
                     ? "มีคนเลือกจากมากไปน้อย"
-                    : "สูงไปต่ำ (ต่อเดือน)"}
+                    : sortMode === "competition"
+                      ? "แข่งขันสูง → ต่ำ"
+                      : "สูงไปต่ำ (ต่อเดือน)"}
               </button>
               <button
                 type="button"
@@ -1524,7 +2090,9 @@ const JobBoard = () => {
                   ? "A → Z"
                   : sortMode === "popularity"
                     ? "มีคนเลือกจากน้อยไปมาก"
-                    : "ต่ำไปสูง (ต่อเดือน)"}
+                    : sortMode === "competition"
+                      ? "แข่งขันต่ำ → สูง"
+                      : "ต่ำไปสูง (ต่อเดือน)"}
               </button>
             </div>
           </div>
@@ -1557,6 +2125,17 @@ const JobBoard = () => {
         </div>
       </div>
 
+      <ShortlistPanel
+        shortlistedJobs={shortlistedJobs}
+        session={activeLoadedSession}
+        activeSessionIdForLinks={activeSessionIdForLinks}
+        onMoveUp={moveShortlistUp}
+        onMoveDown={moveShortlistDown}
+        onRemove={toggleShortlist}
+        onClearAll={clearShortlist}
+        onOpenDetail={(job) => setDetailModalJobId(job.id)}
+      />
+
       <div className="flex flex-col gap-4">
         <p className="text-sm text-zinc-600">
           พบ {displayJobs.length.toLocaleString("th-TH")} ตำแหน่งจากทั้งหมด{" "}
@@ -1574,8 +2153,8 @@ const JobBoard = () => {
                   ยังไม่มีข้อมูลตำแหน่งงาน
                 </p>
                 <p className="mt-2 text-xs text-zinc-500">
-                  กรุณาใส่ cookie กดดึงรายการ Pool แล้วเลือก Pool
-                  เพื่อโหลดข้อมูลตำแหน่งงาน
+                  กรุณาใส่ cookie แล้วกดปุ่ม &ldquo;ดึง Pool และโหลดงาน&rdquo;
+                  เพื่อดูข้อมูลตำแหน่งงาน
                 </p>
               </>
             ) : (
@@ -1584,7 +2163,7 @@ const JobBoard = () => {
                   ไม่พบตำแหน่งที่ตรงกับเงื่อนไขที่เลือก
                 </p>
                 <p className="mt-2 text-xs text-zinc-500">
-                  ลองปรับตัวกรองหรือค้นหาด้วยคำอื่น
+                  ลองปรับตัวกรอง ค้นหาด้วยคำอื่น หรือกดล้างตัวกรองทั้งหมด
                 </p>
               </>
             )}
@@ -1596,13 +2175,38 @@ const JobBoard = () => {
                 key={job.id}
                 job={job}
                 activeSessionIdForLinks={activeSessionIdForLinks}
-                selectedTag={selectedTag}
-                onSelectTag={setSelectedTag}
+                selectedTags={selectedTags}
+                shortlistRank={shortlistRankMap.get(job.id) ?? null}
+                onToggleTag={toggleTag}
+                onToggleShortlist={toggleShortlist}
+                onOpenModal={(targetJob) => setDetailModalJobId(targetJob.id)}
               />
             ))}
           </ul>
         )}
       </div>
+
+      <JobDetailModal
+        job={detailModalJob}
+        activeSessionIdForLinks={activeSessionIdForLinks}
+        selectedTags={selectedTags}
+        isShortlisted={
+          detailModalJob != null && shortlistSet.has(detailModalJob.id)
+        }
+        shortlistRank={
+          detailModalJob != null
+            ? (shortlistRankMap.get(detailModalJob.id) ?? null)
+            : null
+        }
+        onClose={() => setDetailModalJobId(null)}
+        onToggleTag={toggleTag}
+        onToggleShortlist={toggleShortlist}
+      />
+
+      <CookieGuideModal
+        isOpen={isCookieGuideOpen}
+        onClose={() => setIsCookieGuideOpen(false)}
+      />
     </section>
   );
 };
