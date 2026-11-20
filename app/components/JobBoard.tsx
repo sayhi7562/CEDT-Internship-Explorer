@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import {
   collectTagsFromJobs,
+  type InternOpeningsMeta,
   type InternSession,
   type InternSessionRound,
 } from "@/app/lib/intern-transform";
@@ -13,6 +13,9 @@ import type { JobListing } from "@/app/lib/jobs";
 type Job = JobListing;
 
 type WorkingConditionCategory = JobListing["workingConditionCategory"];
+type CoopFilter = "all" | "coop" | "non-coop";
+
+const DEFAULT_SESSION_ID = 9;
 
 const WORKING_CONDITION_OPTIONS: {
   label: string;
@@ -24,11 +27,27 @@ const WORKING_CONDITION_OPTIONS: {
   { label: "Other", value: "Unspecified" },
 ];
 
+const COOP_FILTER_OPTIONS: { label: string; value: CoopFilter }[] = [
+  { label: "ทั้งหมด", value: "all" },
+  { label: "รับสหกิจศึกษา (Co-op)", value: "coop" },
+  { label: "ฝึกงานทั่วไป (ไม่สหกิจ)", value: "non-coop" },
+];
+
+const RICH_HTML_CLASSES =
+  "text-sm leading-relaxed text-zinc-700 [&_h1]:mt-3 [&_h1]:mb-1.5 [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-zinc-900 [&_h2]:mt-3 [&_h2]:mb-1.5 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:text-zinc-900 [&_h3]:mt-2.5 [&_h3]:mb-1 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-zinc-900 [&_h4]:mt-2.5 [&_h4]:mb-1 [&_h4]:text-sm [&_h4]:font-semibold [&_h4]:text-zinc-900 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_li.ql-indent-1]:ml-5 [&_li.ql-indent-2]:ml-10 [&_code]:rounded [&_code]:bg-zinc-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs [&_code]:text-zinc-800 [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-700 [&_strong]:font-semibold [&_strong]:text-zinc-900";
+
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("th-TH")}`;
 }
 
-function formatMonthlyCompensation(value: number | null): string {
+function formatMonthlyCompensation(
+  value: number | null,
+  typeLabel: string | null,
+): string {
+  if (typeLabel === "ไม่มีค่าตอบแทน" || value === 0) {
+    return "ไม่มีค่าตอบแทน";
+  }
+
   if (value == null) {
     return "ไม่ระบุ";
   }
@@ -64,12 +83,125 @@ function formatDateTimeUtc7(isoString: string | null | undefined): string {
   return `${formatted} น. (UTC+7)`;
 }
 
+function formatShortDateUtc7(
+  isoString: string | null | undefined,
+): string | null {
+  if (!isoString) {
+    return null;
+  }
+
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("th-TH", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+}
+
+function formatInternshipPeriod(
+  startIso: string | null,
+  endIso: string | null,
+): string | null {
+  const start = formatShortDateUtc7(startIso);
+  const end = formatShortDateUtc7(endIso);
+  if (start && end) {
+    return `${start} – ${end}`;
+  }
+  if (start) {
+    return `เริ่ม ${start}`;
+  }
+  if (end) {
+    return `สิ้นสุด ${end}`;
+  }
+  return null;
+}
+
+function extractFirstUrl(text: string | null | undefined): string | null {
+  if (!text) {
+    return null;
+  }
+  const match = text.match(/https?:\/\/[^\s)<>]+/i);
+  if (!match) {
+    return null;
+  }
+  return match[0].replace(/[.,;]+$/, "");
+}
+
+function normalizeExternalUrl(url: string | null | undefined): string | null {
+  const trimmed = url?.trim();
+  if (!trimmed) {
+    return null;
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  if (/^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(trimmed)) {
+    return `https://${trimmed}`;
+  }
+  return null;
+}
+
+function getCompanyInitials(primary: string, secondary: string | null): string {
+  const candidate = (secondary ?? primary)
+    .replace(/^บริษัท\s+/u, "")
+    .replace(/^ธนาคาร\s*/u, "")
+    .trim();
+  if (!candidate) {
+    return "?";
+  }
+  return candidate.slice(0, 2).toUpperCase();
+}
+
+function getCompetitionBadge(
+  quota: number | null,
+  draftCount: number | null,
+): { label: string; className: string } | null {
+  if (quota == null || quota <= 0) {
+    return null;
+  }
+  const count = draftCount ?? 0;
+  if (count === 0) {
+    return {
+      label: "ยังไม่มีคนเลือก",
+      className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    };
+  }
+  const ratio = count / quota;
+  const formattedRatio = Number.isInteger(ratio)
+    ? `${ratio}x`
+    : `${ratio.toFixed(1)}x`;
+
+  if (ratio < 1) {
+    return {
+      label: `แข่งขันต่ำ (${formattedRatio})`,
+      className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    };
+  }
+  if (ratio < 2) {
+    return {
+      label: `แข่งขันปานกลาง (${formattedRatio})`,
+      className: "border-amber-200 bg-amber-50 text-amber-700",
+    };
+  }
+  return {
+    label: `แข่งขันสูง (${formattedRatio})`,
+    className: "border-rose-200 bg-rose-50 text-rose-700",
+  };
+}
+
 function buildFilterableJobs(
   jobs: Job[],
   selectedTag: string,
   selectedWorkingConditions: WorkingConditionCategory[],
+  coopFilter: CoopFilter,
   searchQuery: string,
   onlyBookmarked: boolean,
+  onlyAcceptingApplication: boolean,
   sortOrder: "asc" | "desc",
   sortMode: "compensation" | "title" | "popularity",
 ): Job[] {
@@ -79,12 +211,22 @@ function buildFilterableJobs(
   const hasCondition = selectedWorkingConditions.length > 0;
 
   const filtered = jobs.filter((job) => {
-    if (job.quota === 0) {
+    if (
+      onlyAcceptingApplication &&
+      (!job.isAcceptingApplication || !job.isPublished || job.quota === 0)
+    ) {
       return false;
     }
     if (onlyBookmarked && !job.isBookmarked) {
       return false;
     }
+    if (coopFilter === "coop" && !job.openForCooperativeInternship) {
+      return false;
+    }
+    if (coopFilter === "non-coop" && job.openForCooperativeInternship) {
+      return false;
+    }
+
     const matchesTag = hasTag
       ? job.tags.some((tag) => tag.toLowerCase() === selectedTag.toLowerCase())
       : true;
@@ -94,7 +236,17 @@ function buildFilterableJobs(
       : true;
 
     const matchesQuery = hasQuery
-      ? `${job.title} ${job.companyNamePrimary} ${job.companyNameSecondary ?? ""}`
+      ? [
+          job.title,
+          job.companyNamePrimary,
+          job.companyNameSecondary ?? "",
+          job.tags.join(" "),
+          job.officeName ?? "",
+          job.officeAddressLine1 ?? "",
+          job.officeAddressLine2 ?? "",
+          job.location ?? "",
+        ]
+          .join(" ")
           .toLowerCase()
           .includes(trimmedQuery)
       : true;
@@ -123,7 +275,7 @@ function buildFilterableJobs(
     });
   }
 
-  const sorted = filtered.sort((a, b) => {
+  return filtered.sort((a, b) => {
     const aComp = a.monthlyCompensation;
     const bComp = b.monthlyCompensation;
 
@@ -150,8 +302,429 @@ function buildFilterableJobs(
       ? (bComp as number) - (aComp as number)
       : (aComp as number) - (bComp as number);
   });
+}
 
-  return sorted;
+function CompanyLogo({
+  logoUrl,
+  primaryName,
+  secondaryName,
+}: {
+  logoUrl: string | null;
+  primaryName: string;
+  secondaryName: string | null;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (logoUrl && !failed) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={logoUrl}
+        alt={primaryName}
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className="h-12 w-12 shrink-0 rounded-xl border border-zinc-200 bg-white object-contain p-1"
+      />
+    );
+  }
+
+  return (
+    <div
+      aria-hidden="true"
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-100 text-xs font-semibold text-zinc-600"
+    >
+      {getCompanyInitials(primaryName, secondaryName)}
+    </div>
+  );
+}
+
+function TextWithLinks({ text }: { text: string }) {
+  const parts = text.split(/(https?:\/\/[^\s)<>]+)/gi);
+  return (
+    <span className="whitespace-pre-line break-words">
+      {parts.map((part, index) => {
+        if (/^https?:\/\//i.test(part)) {
+          const cleanUrl = part.replace(/[.,;]+$/, "");
+          const trailing = part.slice(cleanUrl.length);
+          return (
+            <span key={`${cleanUrl}-${index}`}>
+              <a
+                href={cleanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline hover:text-blue-700"
+              >
+                {cleanUrl}
+              </a>
+              {trailing}
+            </span>
+          );
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </span>
+  );
+}
+
+function JobCard({
+  job,
+  activeSessionIdForLinks,
+  selectedTag,
+  onSelectTag,
+}: {
+  job: Job;
+  activeSessionIdForLinks: number;
+  selectedTag: string;
+  onSelectTag: (tag: string) => void;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const jobSessionId = job.sessionId ?? activeSessionIdForLinks;
+  const openingUrl = `https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/${jobSessionId}`;
+  const periodLabel = formatInternshipPeriod(
+    job.startDateIso,
+    job.endDateIso,
+  );
+  const mapUrl =
+    extractFirstUrl(job.officeAddressLine2) ??
+    extractFirstUrl(job.officeAddressLine1);
+  const competition = getCompetitionBadge(job.quota, job.inStudentDraftCount);
+  const isUnpaid =
+    job.compensationTypeLabel === "ไม่มีค่าตอบแทน" ||
+    job.monthlyCompensation === 0;
+  const isDailyCompensation =
+    job.compensationTypeLabel != null &&
+    (job.compensationTypeLabel.includes("วัน") ||
+      job.compensationTypeLabel.toLowerCase().includes("day"));
+  const websiteUrl = normalizeExternalUrl(job.companyWebsite);
+  const facebookUrl = normalizeExternalUrl(job.companyFacebook);
+  const hasSeparateDetailContact =
+    Boolean(job.detailContact) &&
+    job.detailContact !== job.recruitmentContact;
+
+  return (
+    <li className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-zinc-300">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div className="flex min-w-0 flex-1 items-start gap-4">
+          <CompanyLogo
+            key={job.logoUrl ?? `fallback-${job.id}`}
+            logoUrl={job.logoUrl}
+            primaryName={job.companyNamePrimary}
+            secondaryName={job.companyNameSecondary}
+          />
+
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <div className="flex flex-col">
+              <span className="text-xs font-medium text-zinc-600">
+                {job.companyNamePrimary}
+              </span>
+              {job.companyNameSecondary && (
+                <span className="text-xs text-zinc-400">
+                  {job.companyNameSecondary}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <a
+                href={openingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xl font-semibold text-zinc-900 transition-colors hover:text-blue-700"
+              >
+                {job.title}
+              </a>
+
+              <span
+                className="inline-flex items-center"
+                aria-label={job.isBookmarked ? "Bookmarked" : "Not bookmarked"}
+                title={job.isBookmarked ? "Bookmarked" : "Not bookmarked"}
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill={job.isBookmarked ? "#facc15" : "#ffffff"}
+                  stroke={job.isBookmarked ? "#facc15" : "#d1d5db"}
+                  strokeWidth="1.5"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3.5l2.9 5.88 6.5.95-4.7 4.58 1.1 6.47L12 18.7l-5.8 3.08 1.1-6.47-4.7-4.58 6.5-.95L12 3.5z" />
+                </svg>
+              </span>
+
+              <span
+                className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+                  job.openForCooperativeInternship
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-600"
+                }`}
+              >
+                {job.openForCooperativeInternship
+                  ? "สหกิจศึกษา (Co-op)"
+                  : "ฝึกงานปกติ"}
+              </span>
+
+              {(!job.isAcceptingApplication || job.quota === 0) && (
+                <span className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-0.5 text-xs font-medium text-rose-700">
+                  ปิดรับสมัคร
+                </span>
+              )}
+              {!job.isPublished && (
+                <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                  ยังไม่เผยแพร่
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-zinc-600">
+              <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700">
+                {job.workingConditionDisplay}
+              </span>
+              {job.location && (
+                <>
+                  <span className="text-zinc-300">•</span>
+                  <span className="min-w-0 break-words">{job.location}</span>
+                </>
+              )}
+              {mapUrl && (
+                <a
+                  href={mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
+                >
+                  แผนที่ ↗
+                </a>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-zinc-600">
+              {job.quota != null && (
+                <span>
+                  รับ{" "}
+                  <strong className="font-semibold text-zinc-900">
+                    {job.quota.toLocaleString("th-TH")}
+                  </strong>{" "}
+                  คน
+                </span>
+              )}
+              <span>
+                มีคนเลือกใน Draft{" "}
+                <strong className="font-semibold text-zinc-900">
+                  {job.inStudentDraftCount?.toLocaleString("th-TH") ?? "0"}
+                </strong>{" "}
+                คน
+              </span>
+              {competition && (
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${competition.className}`}
+                >
+                  {competition.label}
+                </span>
+              )}
+              {periodLabel && (
+                <span className="text-zinc-500">ช่วงฝึกงาน: {periodLabel}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 flex-col items-start md:items-end">
+          <span className="text-xs font-medium text-zinc-500">
+            ค่าตอบแทนโดยประมาณ
+          </span>
+          <span
+            className={`text-lg font-semibold ${
+              isUnpaid ? "text-zinc-600" : "text-zinc-900"
+            }`}
+          >
+            {formatMonthlyCompensation(
+              job.monthlyCompensation,
+              job.compensationTypeLabel,
+            )}
+          </span>
+          {!isUnpaid &&
+            job.compensationAmount != null &&
+            job.compensationTypeLabel && (
+              <span className="text-xs text-zinc-500">
+                อัตราตั้งต้น: {formatCurrency(job.compensationAmount)}{" "}
+                {job.compensationTypeLabel}
+                {isDailyCompensation ? " (×20 วัน)" : ""}
+              </span>
+            )}
+        </div>
+      </div>
+
+      {!isExpanded && job.descriptionSnippet && (
+        <p className="mt-4 text-sm leading-relaxed text-zinc-600">
+          {job.descriptionSnippet}
+        </p>
+      )}
+
+      {!isExpanded && job.requirementsSnippet && (
+        <div className="mt-3 rounded-xl border border-amber-200/80 bg-amber-50/60 px-3.5 py-2 text-xs text-amber-900">
+          <span className="font-semibold">เงื่อนไขเพิ่มเติม: </span>
+          {job.requirementsSnippet}
+        </div>
+      )}
+
+      {job.tags.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {job.tags.map((tag) => {
+            const isActiveTag =
+              selectedTag.toLowerCase() === tag.toLowerCase();
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => onSelectTag(isActiveTag ? "" : tag)}
+                className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                  isActiveTag
+                    ? "border-zinc-900 bg-zinc-900 font-medium text-white"
+                    : "border-zinc-200 bg-zinc-100 text-zinc-600 hover:border-zinc-300 hover:bg-zinc-200/70"
+                }`}
+              >
+                {tag}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {isExpanded && (
+        <div className="mt-5 flex flex-col gap-5 border-t border-zinc-100 pt-5">
+          {job.descriptionHtml && (
+            <div className="flex flex-col gap-2">
+              <h3 className="text-sm font-semibold text-zinc-900">
+                รายละเอียดตำแหน่งงาน
+              </h3>
+              <div
+                className={RICH_HTML_CLASSES}
+                dangerouslySetInnerHTML={{ __html: job.descriptionHtml }}
+              />
+            </div>
+          )}
+
+          {job.requirementsHtml && (
+            <div className="flex flex-col gap-2 rounded-xl border border-amber-200/80 bg-amber-50/60 p-4">
+              <h3 className="text-sm font-semibold text-amber-950">
+                คุณสมบัติและเงื่อนไขเพิ่มเติม
+              </h3>
+              <div
+                className={RICH_HTML_CLASSES}
+                dangerouslySetInnerHTML={{ __html: job.requirementsHtml }}
+              />
+            </div>
+          )}
+
+          <div className="grid gap-4 rounded-xl border border-zinc-200 bg-zinc-50/70 p-4 text-sm md:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                สถานที่ปฏิบัติงาน
+              </h4>
+              {job.officeName && (
+                <p className="font-medium text-zinc-900">{job.officeName}</p>
+              )}
+              {job.officeAddressLine1 && (
+                <p className="text-xs leading-relaxed text-zinc-600">
+                  <TextWithLinks text={job.officeAddressLine1} />
+                </p>
+              )}
+              {job.officeAddressLine2 && (
+                <p className="text-xs leading-relaxed text-zinc-600">
+                  <TextWithLinks text={job.officeAddressLine2} />
+                </p>
+              )}
+              {!job.officeName &&
+                !job.officeAddressLine1 &&
+                !job.officeAddressLine2 && (
+                  <p className="text-xs text-zinc-500">ไม่ระบุที่อยู่</p>
+                )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <h4 className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                ช่องทางติดต่อและลิงก์บริษัท
+              </h4>
+              {job.recruitmentContact && (
+                <div className="text-xs leading-relaxed text-zinc-700">
+                  <span className="block font-medium text-zinc-900">
+                    ติดต่อสมัครงาน / HR:
+                  </span>
+                  <TextWithLinks text={job.recruitmentContact} />
+                </div>
+              )}
+              {hasSeparateDetailContact && job.detailContact && (
+                <div className="text-xs leading-relaxed text-zinc-700">
+                  <span className="block font-medium text-zinc-900">
+                    ติดต่อสอบถามรายละเอียดตำแหน่ง:
+                  </span>
+                  <TextWithLinks text={job.detailContact} />
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2 pt-1">
+                {websiteUrl && (
+                  <a
+                    href={websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-lg border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 hover:border-zinc-400 hover:bg-zinc-50"
+                  >
+                    Website ↗
+                  </a>
+                )}
+                {facebookUrl && (
+                  <a
+                    href={facebookUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100"
+                  >
+                    Facebook ↗
+                  </a>
+                )}
+                {job.companyLine && (
+                  <span className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                    LINE: {job.companyLine}
+                  </span>
+                )}
+              </div>
+              {!job.recruitmentContact &&
+                !hasSeparateDetailContact &&
+                !websiteUrl &&
+                !facebookUrl &&
+                !job.companyLine && (
+                  <p className="text-xs text-zinc-500">ไม่มีข้อมูลติดต่อเพิ่มเติม</p>
+                )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <button
+          type="button"
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((prev) => !prev)}
+          className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-zinc-100"
+        >
+          {isExpanded
+            ? "ซ่อนรายละเอียดเต็ม ▲"
+            : "ดูรายละเอียดเต็ม / คุณสมบัติ / ช่องทางติดต่อ ▼"}
+        </button>
+
+        <a
+          href={openingUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-medium text-zinc-900 transition-colors hover:text-blue-700"
+        >
+          ดูหน้าตำแหน่งบนเว็บคณะ ↗
+        </a>
+      </div>
+    </li>
+  );
 }
 
 const JobBoard = () => {
@@ -167,6 +740,7 @@ const JobBoard = () => {
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   const [remoteJobs, setRemoteJobs] = useState<Job[] | null>(null);
   const [remoteTags, setRemoteTags] = useState<string[] | null>(null);
+  const [remoteMeta, setRemoteMeta] = useState<InternOpeningsMeta | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
@@ -174,8 +748,11 @@ const JobBoard = () => {
   const [selectedWorkingConditions, setSelectedWorkingConditions] = useState<
     WorkingConditionCategory[]
   >([]);
+  const [coopFilter, setCoopFilter] = useState<CoopFilter>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [onlyBookmarked, setOnlyBookmarked] = useState(false);
+  const [onlyAcceptingApplication, setOnlyAcceptingApplication] =
+    useState(true);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [sortMode, setSortMode] = useState<
     "compensation" | "title" | "popularity"
@@ -226,7 +803,8 @@ const JobBoard = () => {
     return count && count > 0 ? count : 5;
   }, [activeLoadedSession]);
 
-  const activeSessionIdForLinks = loadedSessionId ?? selectedSessionId ?? 5;
+  const activeSessionIdForLinks =
+    loadedSessionId ?? selectedSessionId ?? DEFAULT_SESSION_ID;
 
   const activeJobs = useMemo(() => remoteJobs ?? [], [remoteJobs]);
   const activeTags = useMemo(() => {
@@ -236,14 +814,33 @@ const JobBoard = () => {
     return collectTagsFromJobs(activeJobs);
   }, [activeJobs, remoteTags]);
 
+  const tagCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const job of activeJobs) {
+      if (
+        onlyAcceptingApplication &&
+        (!job.isAcceptingApplication || !job.isPublished || job.quota === 0)
+      ) {
+        continue;
+      }
+      for (const tag of job.tags) {
+        const key = tag.toLowerCase();
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [activeJobs, onlyAcceptingApplication]);
+
   const displayJobs = useMemo(
     () =>
       buildFilterableJobs(
         activeJobs,
         selectedTag,
         selectedWorkingConditions,
+        coopFilter,
         searchQuery,
         onlyBookmarked,
+        onlyAcceptingApplication,
         sortOrder,
         sortMode,
       ),
@@ -251,15 +848,23 @@ const JobBoard = () => {
       activeJobs,
       selectedTag,
       selectedWorkingConditions,
+      coopFilter,
       searchQuery,
       onlyBookmarked,
+      onlyAcceptingApplication,
       sortOrder,
       sortMode,
     ],
   );
 
   const totalQuota = useMemo(
-    () => activeJobs.reduce((sum, job) => sum + (job.quota ?? 0), 0),
+    () =>
+      activeJobs.reduce((sum, job) => {
+        if (!job.isAcceptingApplication || !job.isPublished) {
+          return sum;
+        }
+        return sum + (job.quota ?? 0);
+      }, 0),
     [activeJobs],
   );
 
@@ -268,6 +873,23 @@ const JobBoard = () => {
       activeJobs.reduce((sum, job) => sum + (job.inStudentDraftCount ?? 0), 0),
     [activeJobs],
   );
+
+  const hasActiveFilters =
+    searchQuery.trim().length > 0 ||
+    selectedTag.length > 0 ||
+    selectedWorkingConditions.length > 0 ||
+    coopFilter !== "all" ||
+    onlyBookmarked ||
+    !onlyAcceptingApplication;
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedTag("");
+    setSelectedWorkingConditions([]);
+    setCoopFilter("all");
+    setOnlyBookmarked(false);
+    setOnlyAcceptingApplication(true);
+  };
 
   useEffect(() => {
     setLoadError(null);
@@ -372,6 +994,7 @@ const JobBoard = () => {
         body: JSON.stringify({
           cookie: trimmedCookie,
           sessionId: selectedSessionId,
+          onlyAvailablePositions: false,
         }),
       });
 
@@ -387,11 +1010,13 @@ const JobBoard = () => {
       const payload = (await response.json()) as {
         jobs: Job[];
         allTags: string[];
+        meta?: InternOpeningsMeta | null;
         fetchedAt?: string | null;
       };
 
       setRemoteJobs(payload.jobs ?? []);
       setRemoteTags(payload.allTags ?? []);
+      setRemoteMeta(payload.meta ?? null);
       setLoadedSessionId(selectedSessionId);
       setLastUpdated(payload.fetchedAt ?? null);
     } catch (error) {
@@ -477,7 +1102,9 @@ const JobBoard = () => {
                 <button
                   type="button"
                   onClick={loadRemoteJobs}
-                  disabled={isLoading || isLoadingSessions || selectedSessionId == null}
+                  disabled={
+                    isLoading || isLoadingSessions || selectedSessionId == null
+                  }
                   className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                     isLoading || isLoadingSessions || selectedSessionId == null
                       ? "cursor-not-allowed bg-zinc-200 text-zinc-500"
@@ -504,7 +1131,7 @@ const JobBoard = () => {
             {activeLoadedSession
               ? formatSessionLabel(activeLoadedSession)
               : `Session ${activeSessionIdForLinks}`}
-            )
+            {remoteMeta ? ` • จากระบบ ${remoteMeta.totalItem} รายการ` : ""})
           </span>
         )}
       </div>
@@ -713,12 +1340,12 @@ const JobBoard = () => {
         <div className="grid gap-6 md:grid-cols-2 md:items-end">
           <label className="flex flex-col gap-2">
             <span className="text-sm font-medium text-zinc-600">
-              ค้นหาตำแหน่งหรือบริษัท
+              ค้นหาตำแหน่ง บริษัท แท็ก หรือสถานที่
             </span>
             <input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="พิมพ์คำค้น..."
+              placeholder="พิมพ์คำค้น เช่น Software Engineer, BTS, Python..."
               className="rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
             />
           </label>
@@ -731,25 +1358,42 @@ const JobBoard = () => {
               className="rounded-lg border border-zinc-300 px-3 py-2 text-sm shadow-sm focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
             >
               <option value="">ทุกแท็ก</option>
-              {activeTags.map((tag) => (
-                <option key={tag} value={tag}>
-                  {tag}
-                </option>
-              ))}
+              {activeTags.map((tag) => {
+                const count = tagCounts.get(tag.toLowerCase());
+                return (
+                  <option key={tag} value={tag}>
+                    {count != null ? `${tag} (${count})` : tag}
+                  </option>
+                );
+              })}
             </select>
           </label>
 
-          <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700 md:col-span-2">
-            <input
-              type="checkbox"
-              className="h-4 w-4 accent-yellow-400"
-              checked={onlyBookmarked}
-              onChange={(event) => setOnlyBookmarked(event.target.checked)}
-            />
-            แสดงเฉพาะตำแหน่งที่กด Bookmark
-          </label>
+          <div className="grid gap-3 sm:grid-cols-2 md:col-span-2">
+            <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-zinc-900"
+                checked={onlyAcceptingApplication}
+                onChange={(event) =>
+                  setOnlyAcceptingApplication(event.target.checked)
+                }
+              />
+              แสดงเฉพาะตำแหน่งที่เปิดรับสมัคร
+            </label>
 
-          <div className="flex flex-col gap-3 md:col-span-2">
+            <label className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-700">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-yellow-400"
+                checked={onlyBookmarked}
+                onChange={(event) => setOnlyBookmarked(event.target.checked)}
+              />
+              แสดงเฉพาะตำแหน่งที่กด Bookmark
+            </label>
+          </div>
+
+          <div className="flex flex-col gap-3">
             <span className="text-sm font-medium text-zinc-600">
               รูปแบบการทำงาน
             </span>
@@ -776,10 +1420,46 @@ const JobBoard = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 md:col-span-2">
+          <div className="flex flex-col gap-3">
             <span className="text-sm font-medium text-zinc-600">
-              รูปแบบการจัดเรียง
+              ประเภทสหกิจศึกษา (Co-op)
             </span>
+            <div className="flex flex-wrap gap-2">
+              {COOP_FILTER_OPTIONS.map((option) => {
+                const isActive = coopFilter === option.value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setCoopFilter(option.value)}
+                    className={`rounded-full border px-4 py-1 text-sm transition-colors ${
+                      isActive
+                        ? "border-zinc-900 bg-zinc-900 text-white"
+                        : "border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 md:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-sm font-medium text-zinc-600">
+                รูปแบบการจัดเรียง
+              </span>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                >
+                  ล้างตัวกรองทั้งหมด
+                </button>
+              )}
+            </div>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -881,6 +1561,9 @@ const JobBoard = () => {
         <p className="text-sm text-zinc-600">
           พบ {displayJobs.length.toLocaleString("th-TH")} ตำแหน่งจากทั้งหมด{" "}
           {activeJobs.length.toLocaleString("th-TH")} ตำแหน่ง
+          {remoteMeta && remoteMeta.totalItem !== activeJobs.length
+            ? ` (API totalItem: ${remoteMeta.totalItem.toLocaleString("th-TH")})`
+            : ""}
         </p>
 
         {displayJobs.length === 0 ? (
@@ -891,7 +1574,8 @@ const JobBoard = () => {
                   ยังไม่มีข้อมูลตำแหน่งงาน
                 </p>
                 <p className="mt-2 text-xs text-zinc-500">
-                  กรุณาใส่ cookie กดดึงรายการ Pool แล้วเลือก Pool เพื่อโหลดข้อมูลตำแหน่งงาน
+                  กรุณาใส่ cookie กดดึงรายการ Pool แล้วเลือก Pool
+                  เพื่อโหลดข้อมูลตำแหน่งงาน
                 </p>
               </>
             ) : (
@@ -908,118 +1592,13 @@ const JobBoard = () => {
         ) : (
           <ul className="flex flex-col gap-6">
             {displayJobs.map((job) => (
-              <li
+              <JobCard
                 key={job.id}
-                className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:border-zinc-300"
-              >
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div className="flex flex-col gap-3">
-                    <div className="flex flex-col">
-                      <span className="text-xs uppercase tracking-wide text-zinc-500">
-                        {job.companyNamePrimary}
-                      </span>
-                      {job.companyNameSecondary && (
-                        <span className="text-xs text-zinc-500">
-                          {job.companyNameSecondary}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Link
-                        href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/${activeSessionIdForLinks}`}
-                        className="text-xl font-semibold text-zinc-900 transition-colors hover:text-zinc-700"
-                      >
-                        {job.title}
-                      </Link>
-                      <span
-                        className="inline-flex items-center"
-                        aria-label={
-                          job.isBookmarked ? "Bookmarked" : "Not bookmarked"
-                        }
-                        title={
-                          job.isBookmarked ? "Bookmarked" : "Not bookmarked"
-                        }
-                      >
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill={job.isBookmarked ? "#facc15" : "#ffffff"}
-                          stroke={job.isBookmarked ? "#facc15" : "#d1d5db"}
-                          strokeWidth="1.5"
-                          aria-hidden="true"
-                        >
-                          <path d="M12 3.5l2.9 5.88 6.5.95-4.7 4.58 1.1 6.47L12 18.7l-5.8 3.08 1.1-6.47-4.7-4.58 6.5-.95L12 3.5z" />
-                        </svg>
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-sm text-zinc-600">
-                      {job.location && <span>{job.location}</span>}
-                      <span>•</span>
-                      <span>{job.workingConditionDisplay}</span>
-                      {job.quota != null && (
-                        <>
-                          <span>•</span>
-                          <span>
-                            รับ {job.quota.toLocaleString("th-TH")} คน
-                          </span>
-                        </>
-                      )}
-                      <span>•</span>
-                      <span>
-                        มีคนเลือก{" "}
-                        {job.inStudentDraftCount?.toLocaleString("th-TH") ??
-                          "0"}{" "}
-                        คน
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-start md:items-end">
-                    <span className="text-sm font-medium text-zinc-500">
-                      ค่าตอบแทนโดยประมาณ
-                    </span>
-                    <span className="text-lg font-semibold text-zinc-900">
-                      {formatMonthlyCompensation(job.monthlyCompensation)}
-                    </span>
-                    {job.compensationAmount != null &&
-                      job.compensationTypeLabel && (
-                        <span className="text-xs text-zinc-500">
-                          อัตราตั้งต้น: {formatCurrency(job.compensationAmount)}{" "}
-                          {job.compensationTypeLabel}
-                        </span>
-                      )}
-                  </div>
-                </div>
-
-                {job.descriptionSnippet && (
-                  <p className="mt-4 text-sm leading-relaxed text-zinc-600">
-                    {job.descriptionSnippet}
-                  </p>
-                )}
-
-                {job.tags.length > 0 && (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {job.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1 text-xs text-zinc-600"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                <div className="mt-4">
-                  <Link
-                    href={`https://cedtintern.cp.eng.chula.ac.th/opening/${job.id}/session/${activeSessionIdForLinks}`}
-                    className="text-sm font-medium text-zinc-900 transition-colors hover:text-zinc-700"
-                  >
-                    ดูรายละเอียดตำแหน่ง →
-                  </Link>
-                </div>
-              </li>
+                job={job}
+                activeSessionIdForLinks={activeSessionIdForLinks}
+                selectedTag={selectedTag}
+                onSelectTag={setSelectedTag}
+              />
             ))}
           </ul>
         )}
